@@ -52,7 +52,7 @@ endif()
 target_sources(
     voxelgl PRIVATE
     src/app/App.cpp
-    src/platform/GlfwWindow.cpp
+    src/platform/WindowSystem.cpp
     src/texture/StbImage.cpp
 )
 
