@@ -16,7 +16,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     GLFWwindow* window = glfwCreateWindow(
-        800, 600, "GLFW OpenGL macOS", nullptr, nullptr
+        800, 600, "VoxelGL", nullptr, nullptr
     );
 
     if (!window) {
