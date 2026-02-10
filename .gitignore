@@ -22,7 +22,7 @@ compile_commands.json
 *.dll
 *.exe
 *.out
-app
+voxelgl
 
 # -------------------------------------------------
 # IDEs / Editors
