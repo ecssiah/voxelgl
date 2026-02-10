@@ -2,7 +2,8 @@
 
 struct GLFWwindow;
 
-class WindowSystem {
+class WindowSystem 
+{
 
 public:
 
@@ -19,6 +20,7 @@ public:
     static float get_delta_seconds();
 
 private:
+
     static GLFWwindow* s_window;
 
     static double s_last_time_in_seconds;

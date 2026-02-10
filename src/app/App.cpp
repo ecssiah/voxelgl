@@ -5,23 +5,30 @@
 #include <glad/glad.h>
 #include <iostream>
 
-namespace voxelgl {
+namespace voxelgl 
+{
 
 static constexpr int WINDOW_WIDTH  = 800;
 static constexpr int WINDOW_HEIGHT = 600;
 
-bool App::start() {
-    if (!WindowSystem::init_library()) {
+bool App::start() 
+{
+    if (!WindowSystem::init_library()) 
+    {
         std::cerr << "Failed to initialize GLFW\n";
+
         return false;
     }
 
-    if (!WindowSystem::create(WINDOW_WIDTH, WINDOW_HEIGHT, "VoxelGL")) {
+    if (!WindowSystem::create(WINDOW_WIDTH, WINDOW_HEIGHT, "VoxelGL")) 
+    {
         return false;
     }
 
-    if (!gladLoadGLLoader((GLADloadproc)WindowSystem::get_proc_address)) {
+    if (!gladLoadGLLoader((GLADloadproc)WindowSystem::get_proc_address)) 
+    {
         std::cerr << "Failed to initialize GLAD\n";
+
         return false;
     }
 
@@ -32,9 +39,11 @@ bool App::start() {
     return true;
 }
 
-void App::run() {
-    while (!WindowSystem::should_close()) {
-        const float dt = WindowSystem::get_delta_seconds();
+void App::run() 
+{
+    while (!WindowSystem::should_close()) 
+    {
+        const float dt { WindowSystem::get_delta_seconds() };
 
         update(dt);
         render(dt);
@@ -44,15 +53,18 @@ void App::run() {
     }
 }
 
-void App::exit() {
+void App::exit()
+{
     WindowSystem::destroy();
 }
 
-void App::update(const float dt) {
-    // input, simulation, camera later
+void App::update(const float dt) 
+{
+
 }
 
-void App::render(const float dt) {
+void App::render(const float dt) 
+{
     m_renderer.render(dt);
 }
 

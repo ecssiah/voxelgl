@@ -1,48 +1,39 @@
 #include "Renderer.h"
 #include "VoxelMesh.h"
+#include "gl_utils.h"
 
 #include <stb_image.h>
-#include <glad/glad.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-static void check_gl_error(const char* label) 
+static GLuint compile_shader(GLuint type, const char* src) 
 {
-    GLenum err;
+    GLuint shader_id { glCreateShader(type) };
 
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        std::cerr << 
-            "[GL ERROR] " << label << ": 0x" << 
-            std::hex << err << std::dec << "\n";
-    }
-}
-
-static unsigned int compile_shader(unsigned int type, const char* src) 
-{
-    unsigned int shader = glCreateShader(type);
-
-    glShaderSource(shader, 1, &src, nullptr);
-    glCompileShader(shader);
+    glShaderSource(shader_id, 1, &src, nullptr);
+    glCompileShader(shader_id);
 
     int success = 0;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(shader_id, GL_COMPILE_STATUS, &success);
 
-    if (!success) {
+    if (!success) 
+    {
         char log[1024];
-        glGetShaderInfoLog(shader, sizeof(log), nullptr, log);
+        glGetShaderInfoLog(shader_id, sizeof(log), nullptr, log);
 
         std::cerr << "[SHADER COMPILE ERROR]\n" << log << "\n";
     }
 
-    return shader;
+    return shader_id;
 }
 
 static std::string load_text_file(const char* path)
 {
     std::ifstream file(path, std::ios::in);
 
-    if (!file.is_open()) {
+    if (!file.is_open()) 
+    {
         std::cerr << "[FILE ERROR] Could not open " << path << "\n";
 
         return {};
@@ -50,12 +41,12 @@ static std::string load_text_file(const char* path)
 
     std::stringstream buffer;
     buffer << file.rdbuf();
+
     return buffer.str();
 }
 
 bool Renderer::start() 
 {
-    // --- cube buffers ---
     glGenVertexArrays(1, &m_vao);
 
     glGenBuffers(1, &m_vbo);
@@ -64,10 +55,22 @@ bool Renderer::start()
     glBindVertexArray(m_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(voxel_vertex_array), voxel_vertex_array, GL_STATIC_DRAW);
+
+    glBufferData(
+        GL_ARRAY_BUFFER, 
+        sizeof(voxel_vertex_array), 
+        voxel_vertex_array, 
+        GL_STATIC_DRAW
+    );
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(voxel_index_array), voxel_index_array, GL_STATIC_DRAW);
+
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER, 
+        sizeof(voxel_index_array),
+        voxel_index_array, 
+        GL_STATIC_DRAW
+    );
 
     glVertexAttribPointer(
         0,
@@ -88,7 +91,10 @@ bool Renderer::start()
     );
 
     glVertexAttribPointer(
-        2, 2, GL_FLOAT, GL_FALSE,
+        2, 
+        2, 
+        GL_FLOAT, 
+        GL_FALSE,
         sizeof(VoxelVertex),
         (void*)offsetof(VoxelVertex, uv_array)
     );
@@ -99,21 +105,22 @@ bool Renderer::start()
 
     glBindVertexArray(0);
 
-    std::string shader_vert_src { load_text_file("assets/shaders/voxel.vert") };
-    std::string shader_frag_src { load_text_file("assets/shaders/voxel.frag") };
+    const std::string shader_vert_src { load_text_file("assets/shaders/voxel.vert") };
+    const std::string shader_frag_src { load_text_file("assets/shaders/voxel.frag") };
 
-    if (shader_vert_src.empty() || shader_frag_src.empty()) {
+    if (shader_vert_src.empty() || shader_frag_src.empty()) 
+    {
         return false;
     }
 
-    unsigned int shader_vert { 
+    const GLuint shader_vert { 
         compile_shader(
             GL_VERTEX_SHADER,
             shader_vert_src.c_str()
         )
     };
 
-    unsigned int shader_frag { 
+    const GLuint shader_frag { 
         compile_shader(
             GL_FRAGMENT_SHADER,
             shader_frag_src.c_str()
@@ -130,7 +137,8 @@ bool Renderer::start()
     int linked = 0;
     glGetProgramiv(m_program, GL_LINK_STATUS, &linked);
 
-    if (!linked) {
+    if (!linked) 
+    {
         char log[1024];
         glGetProgramInfoLog(m_program, sizeof(log), nullptr, log);
 
@@ -142,8 +150,10 @@ bool Renderer::start()
 
     m_texture_id = load_texture_2d("assets/textures/lion.png");
 
-    if (m_texture_id == 0) {
+    if (m_texture_id == 0) 
+    {
         std::cerr << "Texture failed to load\n";
+
         return false;
     }
 
@@ -174,11 +184,12 @@ void Renderer::render(float dt)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
-    GLint texture_sampler_id { 
+    const GLint texture_sampler_id { 
         glGetUniformLocation(m_program, "u_texture_sampler") 
     };
 
-    if (texture_sampler_id != -1) {
+    if (texture_sampler_id != -1) 
+    {
         glUniform1i(texture_sampler_id, 0);
     }
 
@@ -212,7 +223,7 @@ void Renderer::calculate_mvp(mat4& out_mvp)
     glm_mat4_mul(out_mvp, model, out_mvp);
 }
 
-unsigned int Renderer::load_texture_2d(const char* path)
+GLuint Renderer::load_texture_2d(const char* path)
 {
     int width, height, channels;
 
@@ -228,13 +239,14 @@ unsigned int Renderer::load_texture_2d(const char* path)
         )
     };
 
-    if (!pixel_data) {
+    if (!pixel_data) 
+    {
         std::cerr << "Failed to load image: " << path << "\n";
 
         return 0;
     }
 
-    unsigned int texture_id { 0 };
+    GLuint texture_id = 0;
 
     glGenTextures(1, &texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_id);

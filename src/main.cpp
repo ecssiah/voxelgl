@@ -1,9 +1,11 @@
 #include <voxelgl/App.h>
 
-int main() {
+int main() 
+{
     voxelgl::App app;
 
-    if (!app.start()) {
+    if (!app.start()) 
+    {
         return -1;
     }
 
