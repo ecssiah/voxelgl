@@ -54,7 +54,7 @@ target_sources(
     src/app/App.cpp
     src/platform/WindowSystem.cpp
     src/render/Renderer.cpp
-    src/texture/StbImage.cpp
+    src/render/StbImage.cpp
 )
 
 # ---- Definitions ----
