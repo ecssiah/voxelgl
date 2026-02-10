@@ -53,6 +53,7 @@ target_sources(
     voxelgl PRIVATE
     src/app/App.cpp
     src/platform/WindowSystem.cpp
+    src/render/Renderer.cpp
     src/texture/StbImage.cpp
 )
 

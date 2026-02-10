@@ -3,12 +3,12 @@
 int main() {
     voxelgl::App app;
 
-    if (!app.initialize()) {
+    if (!app.start()) {
         return -1;
     }
 
     app.run();
-    app.shutdown();
+    app.exit();
 
     return 0;
 }

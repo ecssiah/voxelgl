@@ -5,6 +5,8 @@
 
 GLFWwindow* WindowSystem::s_window = nullptr;
 
+double WindowSystem::s_last_time_in_seconds = 0.0;
+
 bool WindowSystem::init_library() {
     return glfwInit();
 }
@@ -33,6 +35,7 @@ void WindowSystem::destroy() {
         glfwDestroyWindow(s_window);
         s_window = nullptr;
     }
+    
     glfwTerminate();
 }
 
@@ -50,4 +53,13 @@ void WindowSystem::poll_events() {
 
 void* WindowSystem::get_proc_address(const char* name) {
     return (void*)glfwGetProcAddress(name);
+}
+
+float WindowSystem::get_delta_seconds() {
+    double time_in_seconds = glfwGetTime();
+    float dt = static_cast<float>(time_in_seconds - s_last_time_in_seconds);
+
+    s_last_time_in_seconds = time_in_seconds;
+    
+    return dt;
 }
