@@ -206,10 +206,11 @@ void Renderer::calculate_mvp(mat4& out_mvp)
 
     glm_mat4_identity(model);
 
-    glm_rotate(model, m_time, (vec3){0.0f, 1.0f, 1.0f});
+    glm_rotate(model, 0.25 * m_time, (vec3){0.0f, 1.0f, 0.0f});
+    glm_rotate(model, 0.50 * m_time, (vec3){0.0f, 0.0f, 1.0f});
 
     glm_mat4_identity(view);
-    glm_translate(view, (vec3){0.0f, 0.0f, -3.0f});
+    glm_translate(view, (vec3){0.0f, 0.0f, -2.0f});
 
     glm_perspective(
         glm_rad(60.0f),
