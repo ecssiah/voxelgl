@@ -1,4 +1,5 @@
 #include "platform/WindowSystem.h"
+#include "platform/InputSystem.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -7,6 +8,21 @@
 
 double WindowSystem::s_last_time_in_seconds { 0.0 };
 GLFWwindow* WindowSystem::s_window { nullptr };
+
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    InputSystem::on_key(key, scancode, action, mods);
+}
+
+static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    InputSystem::on_mouse_button(button, action, mods);
+}
+
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    InputSystem::on_cursor_position(xpos, ypos);
+}
 
 bool WindowSystem::init_library() 
 {
@@ -32,6 +48,10 @@ bool WindowSystem::create(int width, int height, const char* title)
 
     glfwMakeContextCurrent(s_window);
 
+    glfwSetKeyCallback(s_window, key_callback);
+    glfwSetMouseButtonCallback(s_window, mouse_button_callback);
+    glfwSetCursorPosCallback(s_window, cursor_position_callback);
+
     return true;
 }
 
@@ -51,6 +71,11 @@ bool WindowSystem::should_close()
     return glfwWindowShouldClose(s_window);
 }
 
+void WindowSystem::request_close()
+{
+    glfwSetWindowShouldClose(s_window, GLFW_TRUE);
+}
+
 void WindowSystem::swap_buffers() 
 {
     glfwSwapBuffers(s_window);
@@ -59,11 +84,6 @@ void WindowSystem::swap_buffers()
 void WindowSystem::poll_events() 
 {
     glfwPollEvents();
-
-    if (glfwGetKey(s_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) 
-    {
-        glfwSetWindowShouldClose(s_window, GLFW_TRUE);
-    }
 }
 
 void* WindowSystem::get_proc_address(const char* name) 

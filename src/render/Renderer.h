@@ -9,7 +9,8 @@ class Renderer
 public:
 
     bool start();
-    void render(float dt);
+
+    void render(mat4 view_matrix, mat4 projection_matrix);
 
 private:
     GLuint m_vao = 0;
@@ -19,9 +20,7 @@ private:
     GLuint m_program = 0;
     GLuint m_texture_id = 0;
 
-    float m_time = 0.0f;
-
     static GLuint load_texture_2d(const char* path);
 
-    void calculate_mvp(mat4& out_mvp);
+    void calculate_mvp(mat4 view_matrix, mat4 projection_matrix, mat4 out_mvp_matrix);
 };

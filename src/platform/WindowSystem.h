@@ -14,6 +14,8 @@ public:
     static void destroy();
 
     static bool should_close();
+    static void request_close();
+    
     static void swap_buffers();
     static void poll_events();
 

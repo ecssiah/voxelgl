@@ -52,7 +52,9 @@ endif()
 target_sources(
     voxelgl PRIVATE
     src/app/App.cpp
+    src/app/Camera.cpp
     src/platform/WindowSystem.cpp
+    src/platform/InputSystem.cpp
     src/render/Renderer.cpp
     src/render/StbImage.cpp
 )

@@ -1,8 +1,11 @@
 #include "voxelgl/App.h"
 
+#include "../platform/InputSystem.h"
 #include "../platform/WindowSystem.h"
+#include "render/Renderer.h"
 
 #include <iostream>
+#include <cglm/cglm.h>
 
 namespace voxelgl 
 {
@@ -33,6 +36,13 @@ bool App::start()
 
     std::cout << WindowSystem::get_version_info();
 
+    m_camera.set_perspective(
+        glm_rad(60.0f),
+        static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT),
+        0.1f,
+        1000.0f
+    );
+
     m_renderer.start();
 
     return true;
@@ -42,13 +52,13 @@ void App::run()
 {
     while (!WindowSystem::should_close()) 
     {
-        const float dt { WindowSystem::get_delta_seconds() };
+        InputSystem::begin_frame();
+        WindowSystem::poll_events();
 
-        update(dt);
-        render(dt);
+        update(WindowSystem::get_delta_seconds());
+        render();
 
         WindowSystem::swap_buffers();
-        WindowSystem::poll_events();
     }
 }
 
@@ -59,12 +69,15 @@ void App::exit()
 
 void App::update(const float dt) 
 {
-
+    if (InputSystem::is_key_pressed(GLFW_KEY_ESCAPE) == GL_TRUE)
+    {
+        WindowSystem::request_close();
+    }
 }
 
-void App::render(const float dt) 
+void App::render() 
 {
-    m_renderer.render(dt);
+    m_renderer.render(m_camera.get_view_matrix(), m_camera.get_projection_matrix());
 }
 
 } // namespace voxelgl

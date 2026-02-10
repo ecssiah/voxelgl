@@ -1,8 +1,8 @@
 #include "Renderer.h"
 #include "VoxelMesh.h"
 #include "gl_utils.h"
+#include "texture_utils.h"
 
-#include <stb_image.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -148,7 +148,7 @@ bool Renderer::start()
     glDeleteShader(shader_vert);
     glDeleteShader(shader_frag);
 
-    m_texture_id = load_texture_2d("assets/textures/lion.png");
+    m_texture_id = texture::load_texture_2d("assets/textures/lion.png");
 
     if (m_texture_id == 0) 
     {
@@ -162,23 +162,21 @@ bool Renderer::start()
     return true;
 }
 
-void Renderer::render(float dt) 
+void Renderer::render(mat4 view_matrix, mat4 projection_matrix) 
 {
-    glClearColor(0.1f, 0.12f, 0.15f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_time += dt;
-
-    mat4 mvp;
-    calculate_mvp(mvp);
+    mat4 mvp_matrix;
+    calculate_mvp(view_matrix, projection_matrix, mvp_matrix);
 
     glUseProgram(m_program);
 
     glUniformMatrix4fv(
-        glGetUniformLocation(m_program, "u_mvp"),
+        glGetUniformLocation(m_program, "u_mvp_matrix"),
         1,
         GL_FALSE,
-        (float*)mvp
+        (float*)mvp_matrix
     );
 
     glActiveTexture(GL_TEXTURE0);
@@ -198,80 +196,16 @@ void Renderer::render(float dt)
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::calculate_mvp(mat4& out_mvp) 
+void Renderer::calculate_mvp(
+    mat4 view_matrix,
+    mat4 projection_matrix,
+    mat4 out_mvp_matrix)
 {
-    mat4 model;
-    mat4 view;
-    mat4 projection;
+    mat4 model_matrix;
+    glm_mat4_identity(model_matrix);
 
-    glm_mat4_identity(model);
+    mat4 view_projection_matrix;
 
-    glm_rotate(model, 0.25 * m_time, (vec3){0.0f, 1.0f, 0.0f});
-    glm_rotate(model, 0.50 * m_time, (vec3){0.0f, 0.0f, 1.0f});
-
-    glm_mat4_identity(view);
-    glm_translate(view, (vec3){0.0f, 0.0f, -2.0f});
-
-    glm_perspective(
-        glm_rad(60.0f),
-        800.0f / 600.0f,
-        0.1f,
-        100.0f,
-        projection
-    );
-
-    glm_mat4_mul(projection, view, out_mvp);
-    glm_mat4_mul(out_mvp, model, out_mvp);
-}
-
-GLuint Renderer::load_texture_2d(const char* path)
-{
-    int width, height, channels;
-
-    stbi_set_flip_vertically_on_load(true);
-
-    unsigned char* pixel_data { 
-        stbi_load(
-            path,
-            &width,
-            &height,
-            &channels,
-            4 // force RGBA
-        )
-    };
-
-    if (!pixel_data) 
-    {
-        std::cerr << "Failed to load image: " << path << "\n";
-
-        return 0;
-    }
-
-    GLuint texture_id = 0;
-
-    glGenTextures(1, &texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RGBA8,
-        width,
-        height,
-        0,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        pixel_data
-    );
-
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    stbi_image_free(pixel_data);
-
-    return texture_id;
+    glm_mat4_mul(projection_matrix, view_matrix, view_projection_matrix);
+    glm_mat4_mul(view_projection_matrix, model_matrix, out_mvp_matrix);
 }
