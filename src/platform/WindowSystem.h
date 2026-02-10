@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 struct GLFWwindow;
 
 class WindowSystem 
@@ -16,6 +18,8 @@ public:
     static void poll_events();
 
     static void* get_proc_address(const char* name);
+
+    static std::string get_version_info();
 
     static float get_delta_seconds();
 

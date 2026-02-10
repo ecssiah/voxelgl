@@ -1,6 +1,8 @@
 #include "platform/WindowSystem.h"
 
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <sstream>
 #include <iostream>
 
 double WindowSystem::s_last_time_in_seconds { 0.0 };
@@ -67,6 +69,41 @@ void WindowSystem::poll_events()
 void* WindowSystem::get_proc_address(const char* name) 
 {
     return (void*)glfwGetProcAddress(name);
+}
+
+std::string WindowSystem::get_version_info()
+{
+    std::ostringstream ss;
+
+    const char* gl_version { 
+        reinterpret_cast<const char*>(glGetString(GL_VERSION)) 
+    };
+
+    const char* glsl_version { 
+        reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)) 
+    };
+
+    const char* glfw_version { 
+        reinterpret_cast<const char*>(glfwGetVersionString()) 
+    };
+
+    const char* vendor_version { 
+        reinterpret_cast<const char*>(glGetString(GL_VENDOR))
+    };
+
+    const char* renderer_version { 
+        reinterpret_cast<const char*>(glGetString(GL_RENDERER))
+    };
+
+    ss << "\n";
+    ss << "OpenGL: " << "\n  " << gl_version << "\n";
+    ss << "GLSL: "  << "\n  " << glsl_version << "\n";
+    ss << "GLFW: "  << "\n  " << glfw_version << "\n";
+    ss << "Vendor: "  << "\n  " << vendor_version << "\n";
+    ss << "Renderer: "  << "\n  " << renderer_version << "\n";
+    ss << "\n";
+
+    return ss.str();
 }
 
 float WindowSystem::get_delta_seconds() 

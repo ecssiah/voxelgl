@@ -2,7 +2,6 @@
 
 #include "../platform/WindowSystem.h"
 
-#include <glad/glad.h>
 #include <iostream>
 
 namespace voxelgl 
@@ -32,7 +31,7 @@ bool App::start()
         return false;
     }
 
-    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
+    std::cout << WindowSystem::get_version_info();
 
     m_renderer.start();
 
