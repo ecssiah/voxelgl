@@ -12,9 +12,9 @@ namespace voxelgl
 
 bool App::start()
 {
-    if (!WindowSystem::init_library()) 
+    if (!WindowSystem::init()) 
     {
-        std::cerr << "Failed to initialize GLFW\n";
+        std::cerr << "Failed to initialize\n";
 
         return false;
     }

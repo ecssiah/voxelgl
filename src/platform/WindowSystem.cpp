@@ -25,7 +25,7 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
     InputSystem::on_cursor_position(xpos, ypos);
 }
 
-bool WindowSystem::init_library() 
+bool WindowSystem::init() 
 {
     return glfwInit();
 }
