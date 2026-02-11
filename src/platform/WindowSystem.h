@@ -9,8 +9,8 @@ class WindowSystem
 
 public:
 
-    static constexpr int WINDOW_WIDTH = 800;
-    static constexpr int WINDOW_HEIGHT = 600;
+    static constexpr int WINDOW_WIDTH = 1024;
+    static constexpr int WINDOW_HEIGHT = 768;
 
     static bool init_library();
     static bool create(const char* title);

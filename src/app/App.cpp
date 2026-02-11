@@ -33,7 +33,7 @@ bool App::start()
         return false;
     }
 
-    m_camera.set_position(0.0f, 0.0f, 3.0f);
+    m_camera.set_position(0.0f, 0.0f, 6.0f);
     m_camera.set_yaw(-90.0f);
     m_camera.set_pitch(0.0f);
 

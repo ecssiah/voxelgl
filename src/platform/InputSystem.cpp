@@ -72,11 +72,29 @@ double InputSystem::mouse_y()
 
 double InputSystem::mouse_dx()
 {
-    return s_current_mouse_x - s_previous_mouse_x;
+    const double delta { s_current_mouse_x - s_previous_mouse_x };
+
+    if (delta > 50.0f)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        return s_current_mouse_x - s_previous_mouse_x;
+    }
 }
 
 double InputSystem::mouse_dy()
 {
-    return s_current_mouse_y - s_previous_mouse_y;
+    const double delta { s_current_mouse_y - s_previous_mouse_y };
+
+    if (delta > 50.0f)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        return s_current_mouse_y - s_previous_mouse_y;
+    }
 }
 
