@@ -9,8 +9,11 @@ class WindowSystem
 
 public:
 
+    static constexpr int WINDOW_WIDTH = 800;
+    static constexpr int WINDOW_HEIGHT = 600;
+
     static bool init_library();
-    static bool create(int width, int height, const char* title);
+    static bool create(const char* title);
     static void destroy();
 
     static bool should_close();
@@ -23,7 +26,10 @@ public:
 
     static std::string get_version_info();
 
+    static float get_aspect_ratio();
     static float get_delta_seconds();
+
+    static void set_cursor_enabled(bool enabled);
 
 private:
 

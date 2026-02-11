@@ -14,7 +14,15 @@ public:
     mat4& get_view_matrix();
     mat4& get_projection_matrix();
 
+    vec3& get_position();
     void set_position(float x, float y, float z);
+
+    float get_yaw() const;
+    float get_pitch() const;
+
+    void get_forward(vec3 out_forward) const;
+    void get_right(vec3 out_right) const;
+    void get_up(vec3 out_up) const;
 
     void set_yaw(float yaw);
     void set_pitch(float pitch);
@@ -34,6 +42,11 @@ private:
 
     vec3 m_position;
 
-    float m_yaw;
-    float m_pitch;
+    float m_yaw = 0.0f;
+    float m_pitch = 0.0f;
+    float m_pitch_limit = GLM_PI / 2.0f - 0.01f;
+
+    float m_speed = 1.5f;
+    float m_sensitivity = 0.4f;
+
 };

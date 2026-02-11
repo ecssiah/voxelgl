@@ -7,13 +7,10 @@
 #include <iostream>
 #include <cglm/cglm.h>
 
-namespace voxelgl 
+namespace voxelgl
 {
 
-static constexpr int WINDOW_WIDTH  = 800;
-static constexpr int WINDOW_HEIGHT = 600;
-
-bool App::start() 
+bool App::start()
 {
     if (!WindowSystem::init_library()) 
     {
@@ -22,10 +19,12 @@ bool App::start()
         return false;
     }
 
-    if (!WindowSystem::create(WINDOW_WIDTH, WINDOW_HEIGHT, "VoxelGL")) 
+    if (!WindowSystem::create("VoxelGL")) 
     {
         return false;
     }
+
+    WindowSystem::set_cursor_enabled(false);
 
     if (!gladLoadGLLoader((GLADloadproc)WindowSystem::get_proc_address)) 
     {
@@ -34,11 +33,13 @@ bool App::start()
         return false;
     }
 
-    std::cout << WindowSystem::get_version_info();
+    m_camera.set_position(0.0f, 0.0f, 3.0f);
+    m_camera.set_yaw(-90.0f);
+    m_camera.set_pitch(0.0f);
 
     m_camera.set_perspective(
         glm_rad(60.0f),
-        static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT),
+        WindowSystem::get_aspect_ratio(),
         0.1f,
         1000.0f
     );
@@ -55,7 +56,9 @@ void App::run()
         InputSystem::begin_frame();
         WindowSystem::poll_events();
 
-        update(WindowSystem::get_delta_seconds());
+        const float dt { WindowSystem::get_delta_seconds() };
+
+        update(dt);
         render();
 
         WindowSystem::swap_buffers();
@@ -73,11 +76,16 @@ void App::update(const float dt)
     {
         WindowSystem::request_close();
     }
+
+    m_camera.update(dt);
 }
 
 void App::render() 
 {
-    m_renderer.render(m_camera.get_view_matrix(), m_camera.get_projection_matrix());
+    m_renderer.render(
+        m_camera.get_view_matrix(), 
+        m_camera.get_projection_matrix()
+    );
 }
 
 } // namespace voxelgl

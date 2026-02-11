@@ -7,6 +7,7 @@
 #include <iostream>
 
 double WindowSystem::s_last_time_in_seconds { 0.0 };
+
 GLFWwindow* WindowSystem::s_window { nullptr };
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -29,14 +30,14 @@ bool WindowSystem::init_library()
     return glfwInit();
 }
 
-bool WindowSystem::create(int width, int height, const char* title) 
+bool WindowSystem::create(const char* title) 
 {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
-    s_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    s_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, title, nullptr, nullptr);
 
     if (!s_window) 
     {
@@ -126,6 +127,11 @@ std::string WindowSystem::get_version_info()
     return ss.str();
 }
 
+float WindowSystem::get_aspect_ratio()
+{
+    return static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
+}
+
 float WindowSystem::get_delta_seconds() 
 {
     const double time_in_seconds { glfwGetTime() };
@@ -137,4 +143,13 @@ float WindowSystem::get_delta_seconds()
     s_last_time_in_seconds = time_in_seconds;
     
     return dt;
+}
+
+void WindowSystem::set_cursor_enabled(bool enabled)
+{
+    glfwSetInputMode(
+        s_window,
+        GLFW_CURSOR,
+        enabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED
+    );
 }

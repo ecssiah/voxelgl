@@ -1,7 +1,6 @@
 #include "Renderer.h"
 #include "VoxelMesh.h"
-#include "gl_utils.h"
-#include "texture_utils.h"
+#include "utils.h"
 
 #include <iostream>
 #include <fstream>
@@ -159,6 +158,8 @@ bool Renderer::start()
 
     glEnable(GL_DEPTH_TEST);
 
+    glm_mat4_identity(m_model_matrix);
+
     return true;
 }
 
@@ -201,11 +202,10 @@ void Renderer::calculate_mvp(
     mat4 projection_matrix,
     mat4 out_mvp_matrix)
 {
-    mat4 model_matrix;
-    glm_mat4_identity(model_matrix);
+    glm_rotate(m_model_matrix, 0.005f, (vec3){0.0f, 1.0f, 1.0f});
 
     mat4 view_projection_matrix;
 
     glm_mat4_mul(projection_matrix, view_matrix, view_projection_matrix);
-    glm_mat4_mul(view_projection_matrix, model_matrix, out_mvp_matrix);
+    glm_mat4_mul(view_projection_matrix, m_model_matrix, out_mvp_matrix);
 }
