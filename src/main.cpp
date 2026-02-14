@@ -4,13 +4,16 @@ int main()
 {
     voxelgl::App app;
 
-    if (!app.start()) 
+    if (app.start()) 
+    {
+        app.run();
+        app.exit();
+    
+        return 0;
+    }
+    else
     {
         return -1;
     }
 
-    app.run();
-    app.exit();
-
-    return 0;
 }

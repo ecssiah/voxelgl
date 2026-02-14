@@ -156,8 +156,8 @@ void Camera::update(float dt)
     glm_vec3_scale(delta_position, dt * m_speed, delta_position);
     glm_vec3_add(m_position, delta_position, m_position);
 
-    m_yaw += dt * m_sensitivity * InputSystem::mouse_dx();
-    m_pitch -= dt * m_sensitivity * InputSystem::mouse_dy();
+    m_yaw += dt * m_sensitivity * InputSystem::get_mouse_dx();
+    m_pitch -= dt * m_sensitivity * InputSystem::get_mouse_dy();
 
     if (m_pitch > m_pitch_limit) 
     {

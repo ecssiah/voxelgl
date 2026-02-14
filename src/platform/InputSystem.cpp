@@ -60,17 +60,17 @@ bool InputSystem::is_key_pressed(int key)
     return s_current_key_array[key] && !s_previous_key_array[key];
 }
 
-double InputSystem::mouse_x()
+double InputSystem::get_mouse_x()
 {
     return s_current_mouse_x;
 }
 
-double InputSystem::mouse_y()
+double InputSystem::get_mouse_y()
 {
     return s_current_mouse_y;
 }
 
-double InputSystem::mouse_dx()
+double InputSystem::get_mouse_dx()
 {
     const double dx = s_current_mouse_x - s_previous_mouse_x;
 
@@ -84,7 +84,7 @@ double InputSystem::mouse_dx()
     }
 }
 
-double InputSystem::mouse_dy()
+double InputSystem::get_mouse_dy()
 {
     const double dy = s_current_mouse_y - s_previous_mouse_y;
 

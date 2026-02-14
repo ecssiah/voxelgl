@@ -18,10 +18,10 @@ public:
     static bool is_mouse_button_down(int button);
     static bool is_mouse_button_pressed(int button);
 
-    static double mouse_x();
-    static double mouse_y();
-    static double mouse_dx();
-    static double mouse_dy();
+    static double get_mouse_x();
+    static double get_mouse_y();
+    static double get_mouse_dx();
+    static double get_mouse_dy();
 
 private:
 

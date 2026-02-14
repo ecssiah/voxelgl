@@ -6,7 +6,7 @@
 #include <sstream>
 #include <iostream>
 
-double WindowSystem::s_last_time_in_seconds = 0.0;
+double WindowSystem::s_last_time = 0.0;
 
 GLFWwindow* WindowSystem::s_window = nullptr;
 
@@ -118,13 +118,13 @@ float WindowSystem::get_aspect_ratio()
     return WINDOW_WIDTH / static_cast<float>(WINDOW_HEIGHT);
 }
 
-float WindowSystem::get_delta_seconds() 
+float WindowSystem::get_dt() 
 {
-    const double time_in_seconds = glfwGetTime();
-    
-    const float dt = static_cast<float>(time_in_seconds - s_last_time_in_seconds);
+    const double current_time = glfwGetTime();
 
-    s_last_time_in_seconds = time_in_seconds;
+    const float dt = static_cast<float>(current_time - s_last_time);
+
+    s_last_time = current_time;
     
     return dt;
 }
