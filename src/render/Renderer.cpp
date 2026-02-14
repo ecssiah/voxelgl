@@ -8,7 +8,7 @@
 
 static GLuint compile_shader(GLuint type, const char* src) 
 {
-    GLuint shader_id { glCreateShader(type) };
+    GLuint shader_id = glCreateShader(type);
 
     glShaderSource(shader_id, 1, &src, nullptr);
     glCompileShader(shader_id);
@@ -31,7 +31,7 @@ static std::string load_text_file(const char* path)
 {
     std::ifstream file(path, std::ios::in);
 
-    if (!file.is_open()) 
+    if (!file.is_open())
     {
         std::cerr << "[FILE ERROR] Could not open " << path << "\n";
 
@@ -104,27 +104,25 @@ bool Renderer::start()
 
     glBindVertexArray(0);
 
-    const std::string shader_vert_src { load_text_file("assets/shaders/voxel.vert") };
-    const std::string shader_frag_src { load_text_file("assets/shaders/voxel.frag") };
+    const std::string shader_vert_src = load_text_file("assets/shaders/voxel.vert");
+    const std::string shader_frag_src = load_text_file("assets/shaders/voxel.frag");
 
     if (shader_vert_src.empty() || shader_frag_src.empty()) 
     {
         return false;
     }
 
-    const GLuint shader_vert { 
+    const GLuint shader_vert = 
         compile_shader(
             GL_VERTEX_SHADER,
             shader_vert_src.c_str()
-        )
-    };
+        );
 
-    const GLuint shader_frag { 
+    const GLuint shader_frag =
         compile_shader(
             GL_FRAGMENT_SHADER,
             shader_frag_src.c_str()
-        )
-    };
+        );
 
     m_program = glCreateProgram();
 
@@ -183,9 +181,7 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
-    const GLint texture_sampler_id { 
-        glGetUniformLocation(m_program, "u_texture_sampler") 
-    };
+    const GLint texture_sampler_id = glGetUniformLocation(m_program, "u_texture_sampler");
 
     if (texture_sampler_id != -1) 
     {

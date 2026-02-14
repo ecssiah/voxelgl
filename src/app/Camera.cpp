@@ -81,9 +81,9 @@ void Camera::get_forward(vec3 out_forward) const
 
 void Camera::get_right(vec3 out_right) const 
 {
-    vec3 world_up { 0.f, 1.f, 0.f };
+    vec3 world_up = { 0.0f, 1.0f, 0.0f };
 
-    vec3 forward, right;
+    vec3 forward;
     get_forward(forward);
 
     glm_vec3_cross(forward, world_up, out_right);
@@ -92,7 +92,7 @@ void Camera::get_right(vec3 out_right) const
 
 void Camera::get_up(vec3 out_up) const
 {
-    vec3 up, forward, right;
+    vec3 forward, right;
 
     get_forward(forward);
     get_right(right);
@@ -135,15 +135,15 @@ void Camera::update(float dt)
         input_value[0] += 1.0f;
     }
 
-    glm::normalize_vec3(input_value);
+    cglm::normalize_vec3_safe(input_value);
 
     vec3 right, forward;
     get_forward(forward);
     get_right(right);
 
-    vec3 flat_forward { forward[0], 0.0f, forward[2] };
+    vec3 flat_forward = { forward[0], 0.0f, forward[2] };
 
-    glm::normalize_vec3(flat_forward);
+    cglm::normalize_vec3_safe(flat_forward);
 
     vec3 delta_position;
     glm_vec3_scale(flat_forward, input_value[2], flat_forward);
@@ -151,7 +151,7 @@ void Camera::update(float dt)
 
     glm_vec3_add(flat_forward, right, delta_position);
 
-    glm::normalize_vec3(delta_position);
+    cglm::normalize_vec3_safe(delta_position);
 
     glm_vec3_scale(delta_position, dt * m_speed, delta_position);
     glm_vec3_add(m_position, delta_position, m_position);

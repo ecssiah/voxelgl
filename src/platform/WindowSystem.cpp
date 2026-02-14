@@ -6,9 +6,9 @@
 #include <sstream>
 #include <iostream>
 
-double WindowSystem::s_last_time_in_seconds { 0.0 };
+double WindowSystem::s_last_time_in_seconds = 0.0;
 
-GLFWwindow* WindowSystem::s_window { nullptr };
+GLFWwindow* WindowSystem::s_window = nullptr;
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -96,25 +96,11 @@ std::string WindowSystem::get_version_info()
 {
     std::ostringstream ss;
 
-    const char* gl_version { 
-        reinterpret_cast<const char*>(glGetString(GL_VERSION)) 
-    };
-
-    const char* glsl_version { 
-        reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)) 
-    };
-
-    const char* glfw_version { 
-        reinterpret_cast<const char*>(glfwGetVersionString()) 
-    };
-
-    const char* vendor_version { 
-        reinterpret_cast<const char*>(glGetString(GL_VENDOR))
-    };
-
-    const char* renderer_version { 
-        reinterpret_cast<const char*>(glGetString(GL_RENDERER))
-    };
+    const char* gl_version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    const char* glsl_version = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+    const char* glfw_version = reinterpret_cast<const char*>(glfwGetVersionString());
+    const char* vendor_version = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    const char* renderer_version = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
 
     ss << "\n";
     ss << "OpenGL: " << "\n  " << gl_version << "\n";
@@ -129,16 +115,14 @@ std::string WindowSystem::get_version_info()
 
 float WindowSystem::get_aspect_ratio()
 {
-    return static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
+    return WINDOW_WIDTH / static_cast<float>(WINDOW_HEIGHT);
 }
 
 float WindowSystem::get_delta_seconds() 
 {
-    const double time_in_seconds { glfwGetTime() };
-
-    const float dt { 
-        static_cast<float>(time_in_seconds - s_last_time_in_seconds) 
-    };
+    const double time_in_seconds = glfwGetTime();
+    
+    const float dt = static_cast<float>(time_in_seconds - s_last_time_in_seconds);
 
     s_last_time_in_seconds = time_in_seconds;
     

@@ -56,7 +56,7 @@ void App::run()
         InputSystem::begin_frame();
         WindowSystem::poll_events();
 
-        const float dt { WindowSystem::get_delta_seconds() };
+        const float dt = WindowSystem::get_delta_seconds();
 
         update(dt);
         render();

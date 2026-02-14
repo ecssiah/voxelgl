@@ -1,15 +1,15 @@
 #include "platform/InputSystem.h"
 
-std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_current_key_array {};
-std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_previous_key_array {};
+std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_current_key_array;
+std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_previous_key_array;
 
-std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> InputSystem::s_current_mouse_array {};
-std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> InputSystem::s_previous_mouse_array {};
+std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> InputSystem::s_current_mouse_array;
+std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> InputSystem::s_previous_mouse_array;
 
-double InputSystem::s_current_mouse_x { 0.0 };
-double InputSystem::s_current_mouse_y { 0.0 };
-double InputSystem::s_previous_mouse_x { 0.0 };
-double InputSystem::s_previous_mouse_y { 0.0 };
+double InputSystem::s_current_mouse_x = 0.0;
+double InputSystem::s_current_mouse_y = 0.0;
+double InputSystem::s_previous_mouse_x = 0.0;
+double InputSystem::s_previous_mouse_y = 0.0;
 
 void InputSystem::begin_frame()
 {
@@ -72,11 +72,11 @@ double InputSystem::mouse_y()
 
 double InputSystem::mouse_dx()
 {
-    const double delta { s_current_mouse_x - s_previous_mouse_x };
+    const double dx = s_current_mouse_x - s_previous_mouse_x;
 
-    if (delta > 50.0f)
+    if (dx > 50.0)
     {
-        return 0.0f;
+        return 0.0;
     }
     else
     {
@@ -86,11 +86,11 @@ double InputSystem::mouse_dx()
 
 double InputSystem::mouse_dy()
 {
-    const double delta { s_current_mouse_y - s_previous_mouse_y };
+    const double dy = s_current_mouse_y - s_previous_mouse_y;
 
-    if (delta > 50.0f)
+    if (dy > 50.0)
     {
-        return 0.0f;
+        return 0.0;
     }
     else
     {

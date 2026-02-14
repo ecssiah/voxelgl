@@ -32,10 +32,10 @@ private:
     void rebuild_projection_matrix();
     void rebuild_view_matrix();
 
-    float m_field_of_view;
-    float m_aspect_ratio;
-    float m_near_plane;
-    float m_far_plane;
+    float m_field_of_view = 60.0f;
+    float m_aspect_ratio = 16.0f / 9.0f;
+    float m_near_plane = 0.1f;
+    float m_far_plane = 1000.0f;
 
     mat4 m_projection_matrix;
     mat4 m_view_matrix;

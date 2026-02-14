@@ -3,10 +3,10 @@
 #include <cglm/cglm.h>
 #include <stb_image.h>
 
-namespace glm
+namespace cglm
 {
 
-inline void normalize_vec3(vec3 out_vector)
+inline void normalize_vec3_safe(vec3 out_vector)
 {
     if (glm_vec3_norm(out_vector) > 0.0f) 
     {
@@ -76,15 +76,14 @@ inline GLuint load_texture_2d(const char* path)
 
     stbi_set_flip_vertically_on_load(true);
 
-    unsigned char* pixel_data { 
+    unsigned char* pixel_data = 
         stbi_load(
             path,
             &width,
             &height,
             &channels,
-            4 // force RGBA
-        )
-    };
+            4
+        );
 
     if (!pixel_data) 
     {

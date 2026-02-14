@@ -7,7 +7,7 @@ struct VoxelVertex
     float uv_array[2];
 };
 
-static constexpr VoxelVertex voxel_vertex_array[] {
+static constexpr VoxelVertex voxel_vertex_array[] = {
     {
         {-0.5f, -0.5f, 0.5f},
         {0, 0, 1},
@@ -153,7 +153,7 @@ static constexpr VoxelVertex voxel_vertex_array[] {
     },
 };
 
-static constexpr unsigned int voxel_index_array[] {
+static constexpr unsigned int voxel_index_array[] = {
     0, 1, 2, 2,  3, 0, 
     4, 5, 6, 6, 7, 4,  
     8, 9, 10, 10, 11, 8, 
