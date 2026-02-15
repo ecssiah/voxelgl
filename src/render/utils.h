@@ -3,7 +3,7 @@
 #include <cglm/cglm.h>
 #include <stb_image.h>
 
-namespace cglm
+namespace cglm_ext
 {
 
 inline void normalize_vec3_safe(vec3 out_vector)
@@ -49,7 +49,7 @@ inline void print_mat4(const char* name, mat4 matrix)
 } // namespace glm
 
 
-namespace gl
+namespace gl_ext
 {
 
 inline void get_errors(const char* label) 
@@ -67,7 +67,7 @@ inline void get_errors(const char* label)
 
 } // namespace gl
 
-namespace texture
+namespace stb_ext
 {
 
 inline GLuint load_texture_2d(const char* path)

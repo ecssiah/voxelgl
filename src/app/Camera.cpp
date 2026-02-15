@@ -135,7 +135,7 @@ void Camera::update(float dt)
         input_value[0] += 1.0f;
     }
 
-    cglm::normalize_vec3_safe(input_value);
+    cglm_ext::normalize_vec3_safe(input_value);
 
     vec3 right, forward;
     get_forward(forward);
@@ -143,7 +143,7 @@ void Camera::update(float dt)
 
     vec3 flat_forward = { forward[0], 0.0f, forward[2] };
 
-    cglm::normalize_vec3_safe(flat_forward);
+    cglm_ext::normalize_vec3_safe(flat_forward);
 
     vec3 delta_position;
     glm_vec3_scale(flat_forward, input_value[2], flat_forward);
@@ -151,7 +151,7 @@ void Camera::update(float dt)
 
     glm_vec3_add(flat_forward, right, delta_position);
 
-    cglm::normalize_vec3_safe(delta_position);
+    cglm_ext::normalize_vec3_safe(delta_position);
 
     glm_vec3_scale(delta_position, dt * m_speed, delta_position);
     glm_vec3_add(m_position, delta_position, m_position);

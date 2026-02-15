@@ -145,7 +145,7 @@ bool Renderer::start()
     glDeleteShader(shader_vert);
     glDeleteShader(shader_frag);
 
-    m_texture_id = texture::load_texture_2d("assets/textures/lion.png");
+    m_texture_id = stb_ext::load_texture_2d("assets/textures/lion.png");
 
     if (m_texture_id == 0) 
     {
