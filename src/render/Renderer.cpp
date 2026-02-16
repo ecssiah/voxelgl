@@ -4,6 +4,8 @@
 #include "utils/stb_utils.h"
 #include <iostream>
 
+
+
 static GLuint compile_shader(GLuint type_id, const char* src) 
 {
     GLuint shader_id = glCreateShader(type_id);
@@ -24,6 +26,8 @@ static GLuint compile_shader(GLuint type_id, const char* src)
 
     return shader_id;
 }
+
+
 
 bool Renderer::start() 
 {

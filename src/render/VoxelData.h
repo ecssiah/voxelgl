@@ -1,5 +1,7 @@
 #pragma once
 
+
+
 static constexpr float VOXEL_RADIUS = 0.5f;
 
 struct VoxelVertexData 

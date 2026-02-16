@@ -5,7 +5,10 @@
 #include "render/Renderer.h"
 
 #include <iostream>
+#include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
+
+
 
 namespace voxelgl
 {
@@ -88,4 +91,4 @@ void App::render()
     );
 }
 
-} // namespace voxelgl
+}

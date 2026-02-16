@@ -1,5 +1,9 @@
+#pragma once
+
 #include <GLFW/glfw3.h>
 #include <array>
+
+
 
 class InputSystem
 {

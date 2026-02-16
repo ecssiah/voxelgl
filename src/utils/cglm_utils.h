@@ -1,3 +1,5 @@
+#pragma ounce
+
 #include <cglm/cglm.h>
 #include <iostream>
 

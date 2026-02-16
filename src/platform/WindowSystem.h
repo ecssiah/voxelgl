@@ -4,6 +4,8 @@
 
 struct GLFWwindow;
 
+
+
 class WindowSystem 
 {
 

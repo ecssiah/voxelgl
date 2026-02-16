@@ -14,6 +14,7 @@ void main()
 
     // vec3 final_color = texture_color;
     // vec3 final_color = normal_color;
+    // vec3 final_color = texture_color * normal_color;
     vec3 final_color = mix(texture_color, texture_color * normal_color, 0.7);
 
     FragColor = vec4(final_color, 1.0);

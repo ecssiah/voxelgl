@@ -1,7 +1,6 @@
 #include "platform/WindowSystem.h"
 #include "platform/InputSystem.h"
 
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <sstream>
 #include <iostream>
