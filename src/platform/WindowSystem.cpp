@@ -6,24 +6,28 @@
 #include <sstream>
 #include <iostream>
 
+
+
+void WindowSystem::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    InputSystem::handle_key(key, scancode, action, mods);
+}
+
+void WindowSystem::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    InputSystem::handle_mouse_button(button, action, mods);
+}
+
+void WindowSystem::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    InputSystem::handle_cursor_position(xpos, ypos);
+}
+
 double WindowSystem::s_last_time = 0.0;
 
 GLFWwindow* WindowSystem::s_window = nullptr;
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    InputSystem::on_key(key, scancode, action, mods);
-}
 
-static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-    InputSystem::on_mouse_button(button, action, mods);
-}
-
-static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    InputSystem::on_cursor_position(xpos, ypos);
-}
 
 bool WindowSystem::init() 
 {
@@ -121,7 +125,6 @@ float WindowSystem::get_aspect_ratio()
 double WindowSystem::get_dt() 
 {
     const double current_time = glfwGetTime();
-
     const double dt = current_time - s_last_time;
 
     s_last_time = current_time;

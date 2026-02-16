@@ -1,5 +1,7 @@
 #pragma once
 
+static constexpr float VOXEL_RADIUS = 0.5f;
+
 struct VoxelVertexData 
 {
     float position_array[3];
@@ -7,153 +9,153 @@ struct VoxelVertexData
     float uv_array[2];
 };
 
-static constexpr VoxelVertexData voxel_vertex_array[] = {
+static constexpr VoxelVertexData VOXEL_VERTEX_ARRAY[] = {
     {
-        { -0.5f, -0.5f, 0.5f },
+        { -VOXEL_RADIUS, -VOXEL_RADIUS, +VOXEL_RADIUS },
         { 0, 0, 1 },
         { 0, 0 },
     },
 
     {
-        { 0.5f, -0.5f, 0.5f },
+        { +VOXEL_RADIUS, -VOXEL_RADIUS, +VOXEL_RADIUS },
         { 0, 0, 1 },
         { 1, 0 },
     },
 
     {
-        { 0.5f, 0.5f, 0.5f },
+        { +VOXEL_RADIUS, +VOXEL_RADIUS, +VOXEL_RADIUS },
         { 0, 0, 1 },
         { 1, 1 },
     },
 
     {
-        { -0.5f, 0.5f, 0.5f },
+        { -VOXEL_RADIUS, +VOXEL_RADIUS, +VOXEL_RADIUS },
         { 0, 0, 1 },
         { 0, 1 },
     },
 
     {
-        { 0.5f, -0.5f, -0.5f },
+        { +VOXEL_RADIUS, -VOXEL_RADIUS, -VOXEL_RADIUS },
         { 0, 0, -1 },
         { 0, 0 },
     },
 
     {
-        { -0.5f, -0.5f, -0.5f },
+        { -VOXEL_RADIUS, -VOXEL_RADIUS, -VOXEL_RADIUS },
         { 0, 0, -1 },
         { 1, 0 },
     },
 
     {
-        { -0.5f, 0.5f, -0.5f },
+        { -VOXEL_RADIUS, +VOXEL_RADIUS, -VOXEL_RADIUS },
         { 0, 0, -1 },
         { 1, 1 },
     },
 
     {
-        { 0.5f, 0.5f, -0.5f },
+        { +VOXEL_RADIUS, +VOXEL_RADIUS, -VOXEL_RADIUS },
         { 0, 0, -1 },
         { 0, 1 },
     },
 
     {
-        { 0.5f, -0.5f, 0.5f },
+        { +VOXEL_RADIUS, -VOXEL_RADIUS, +VOXEL_RADIUS },
         { 1, 0, 0 },
         { 0, 0 },
     },
 
     {
-        { 0.5f, -0.5f, -0.5f },
+        { +VOXEL_RADIUS, -VOXEL_RADIUS, -VOXEL_RADIUS },
         { 1, 0, 0 },
         { 1, 0 },
     },
 
     {
-        { 0.5f, 0.5f, -0.5f },
+        { +VOXEL_RADIUS, +VOXEL_RADIUS, -VOXEL_RADIUS },
         { 1, 0, 0 },
         { 1, 1 },
     },
 
     {
-        { 0.5f, 0.5f, 0.5f },
+        { +VOXEL_RADIUS, +VOXEL_RADIUS, +VOXEL_RADIUS },
         { 1, 0, 0 },
         { 0, 1 },
     },
 
     {
-        { -0.5f, -0.5f, -0.5f },
+        { -VOXEL_RADIUS, -VOXEL_RADIUS, -VOXEL_RADIUS },
         { -1, 0, 0 },
         { 0, 0 },
     },
 
     {
-        { -0.5f, -0.5f, 0.5f },
+        { -VOXEL_RADIUS, -VOXEL_RADIUS, +VOXEL_RADIUS },
         { -1, 0, 0 },
         { 1, 0 },
     },
 
     {
-        { -0.5f, 0.5f, 0.5f },
+        { -VOXEL_RADIUS, +VOXEL_RADIUS, +VOXEL_RADIUS },
         { -1, 0, 0 },
         { 1, 1 },
     },
 
     {
-        { -0.5f, 0.5f, -0.5f },
+        { -VOXEL_RADIUS, +VOXEL_RADIUS, -VOXEL_RADIUS },
         { -1, 0, 0 },
         { 0, 1 },
     },
 
     {
-        { -0.5f, 0.5f, 0.5f },
+        { -VOXEL_RADIUS, +VOXEL_RADIUS, +VOXEL_RADIUS },
         { 0, 1, 0 },
         { 0, 0 },
     },
 
     {
-        { 0.5f, 0.5f, 0.5f },
+        { +VOXEL_RADIUS, +VOXEL_RADIUS, +VOXEL_RADIUS },
         { 0, 1, 0 },
         { 1, 0 },
     },
 
     {
-        { 0.5f, 0.5f, -0.5f },
+        { +VOXEL_RADIUS, +VOXEL_RADIUS, -VOXEL_RADIUS },
         { 0, 1, 0 },
         { 1, 1 },
     },
 
     {
-        { -0.5f, 0.5f, -0.5f },
+        { -VOXEL_RADIUS, +VOXEL_RADIUS, -VOXEL_RADIUS },
         { 0, 1, 0 },
         { 0, 1 },
     },
 
     {
-        { -0.5f, -0.5f, -0.5f },
+        { -VOXEL_RADIUS, -VOXEL_RADIUS, -VOXEL_RADIUS },
         { 0, -1, 0 },
         { 0, 0 },
     },
 
     {
-        { 0.5f, -0.5f, -0.5f },
+        { +VOXEL_RADIUS, -VOXEL_RADIUS, -VOXEL_RADIUS },
         { 0, -1, 0 },
         { 1, 0 },
     },
 
     {
-        { 0.5f, -0.5f, 0.5f },
+        { +VOXEL_RADIUS, -VOXEL_RADIUS, +VOXEL_RADIUS },
         { 0, -1, 0 },
         { 1, 1 },
     },
 
     {
-        { -0.5f, -0.5f, 0.5f },
+        { -VOXEL_RADIUS, -VOXEL_RADIUS, +VOXEL_RADIUS },
         { 0, -1, 0 },
         { 0, 1 },
     },
 };
 
-static constexpr unsigned int voxel_index_array[] = {
+static constexpr unsigned int VOXEL_INDEX_ARRAY[] = {
     0, 1, 2, 2,  3, 0, 
     4, 5, 6, 6, 7, 4,  
     8, 9, 10, 10, 11, 8, 

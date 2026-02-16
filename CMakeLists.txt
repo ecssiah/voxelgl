@@ -56,7 +56,7 @@ target_sources(
     src/platform/WindowSystem.cpp
     src/platform/InputSystem.cpp
     src/render/Renderer.cpp
-    src/utils/stb_image_loader.cpp
+    src/render/STBImageLoader.cpp
 )
 
 # ---- Definitions ----

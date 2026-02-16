@@ -33,7 +33,7 @@ bool App::start()
         return false;
     }
 
-    m_camera.set_position(0.0f, 0.0f, 6.0f);
+    m_camera.set_position(0.0f, 0.0f, 5.0f);
     m_camera.set_yaw(-90.0f);
     m_camera.set_pitch(0.0f);
 
@@ -56,7 +56,7 @@ void App::run()
         InputSystem::begin_frame();
         WindowSystem::poll_events();
 
-        const float dt = WindowSystem::get_dt();
+        const double dt = WindowSystem::get_dt();
 
         update(dt);
         render();
@@ -70,7 +70,7 @@ void App::exit()
     WindowSystem::destroy();
 }
 
-void App::update(const float dt) 
+void App::update(const double dt) 
 {
     if (InputSystem::is_key_pressed(GLFW_KEY_ESCAPE) == GL_TRUE)
     {
@@ -80,7 +80,7 @@ void App::update(const float dt)
     m_camera.update(dt);
 }
 
-void App::render() 
+void App::render()
 {
     m_renderer.render(
         m_camera.get_view_matrix(), 

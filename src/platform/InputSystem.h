@@ -8,9 +8,9 @@ public:
 
     static void begin_frame();
 
-    static void on_key(int key, int scancode, int action, int mods);
-    static void on_mouse_button(int button, int action, int mods);
-    static void on_cursor_position(double xpos, double ypos);
+    static void handle_key(int key, int scancode, int action, int mods);
+    static void handle_mouse_button(int button, int action, int mods);
+    static void handle_cursor_position(double xpos, double ypos);
 
     static bool is_key_pressed(int key);
     static bool is_key_down(int key);

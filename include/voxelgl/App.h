@@ -20,7 +20,7 @@ private:
     Camera m_camera;
     Renderer m_renderer;
 
-    void update(const float dt);
+    void update(const double dt);
     void render();
 
 };

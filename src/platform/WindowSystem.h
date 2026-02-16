@@ -9,6 +9,10 @@ class WindowSystem
 
 public:
 
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+
     static constexpr int WINDOW_WIDTH = 1024;
     static constexpr int WINDOW_HEIGHT = 768;
 
@@ -27,7 +31,7 @@ public:
     static std::string get_version_info();
 
     static float get_aspect_ratio();
-    
+
     static double get_dt();
 
     static void set_cursor_enabled(bool enabled);

@@ -1,14 +1,12 @@
 #include "Renderer.h"
 #include "VoxelData.h"
+#include "utils/file_utils.h"
 #include "utils/stb_utils.h"
-
 #include <iostream>
-#include <fstream>
-#include <sstream>
 
-static GLuint compile_shader(GLuint type, const char* src) 
+static GLuint compile_shader(GLuint type_id, const char* src) 
 {
-    GLuint shader_id = glCreateShader(type);
+    GLuint shader_id = glCreateShader(type_id);
 
     glShaderSource(shader_id, 1, &src, nullptr);
     glCompileShader(shader_id);
@@ -27,47 +25,30 @@ static GLuint compile_shader(GLuint type, const char* src)
     return shader_id;
 }
 
-static std::string load_text_file(const char* path)
-{
-    std::ifstream file(path, std::ios::in);
-
-    if (!file.is_open())
-    {
-        std::cerr << "[FILE ERROR] Could not open " << path << "\n";
-
-        return {};
-    }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-
-    return buffer.str();
-}
-
 bool Renderer::start() 
 {
-    glGenVertexArrays(1, &m_vao);
+    glGenVertexArrays(1, &m_vao_id);
 
-    glGenBuffers(1, &m_vbo);
-    glGenBuffers(1, &m_ebo);
+    glGenBuffers(1, &m_vbo_id);
+    glGenBuffers(1, &m_ebo_id);
 
-    glBindVertexArray(m_vao);
+    glBindVertexArray(m_vao_id);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_id);
 
     glBufferData(
         GL_ARRAY_BUFFER, 
-        sizeof(voxel_vertex_array), 
-        voxel_vertex_array, 
+        sizeof(VOXEL_VERTEX_ARRAY), 
+        VOXEL_VERTEX_ARRAY, 
         GL_STATIC_DRAW
     );
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo_id);
 
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER, 
-        sizeof(voxel_index_array),
-        voxel_index_array, 
+        sizeof(VOXEL_INDEX_ARRAY),
+        VOXEL_INDEX_ARRAY, 
         GL_STATIC_DRAW
     );
 
@@ -104,8 +85,8 @@ bool Renderer::start()
 
     glBindVertexArray(0);
 
-    const std::string shader_vert_src = load_text_file("assets/shaders/voxel.vert");
-    const std::string shader_frag_src = load_text_file("assets/shaders/voxel.frag");
+    const std::string shader_vert_src = file_utils::load_text_file("assets/shaders/voxel.vert");
+    const std::string shader_frag_src = file_utils::load_text_file("assets/shaders/voxel.frag");
 
     if (shader_vert_src.empty() || shader_frag_src.empty()) 
     {
@@ -124,20 +105,20 @@ bool Renderer::start()
             shader_frag_src.c_str()
         );
 
-    m_program = glCreateProgram();
+    m_program_id = glCreateProgram();
 
-    glAttachShader(m_program, shader_vert);
-    glAttachShader(m_program, shader_frag);
+    glAttachShader(m_program_id, shader_vert);
+    glAttachShader(m_program_id, shader_frag);
 
-    glLinkProgram(m_program);
+    glLinkProgram(m_program_id);
 
     int linked = 0;
-    glGetProgramiv(m_program, GL_LINK_STATUS, &linked);
+    glGetProgramiv(m_program_id, GL_LINK_STATUS, &linked);
 
     if (!linked) 
     {
         char log[1024];
-        glGetProgramInfoLog(m_program, sizeof(log), nullptr, log);
+        glGetProgramInfoLog(m_program_id, sizeof(log), nullptr, log);
 
         std::cerr << "[PROGRAM LINK ERROR]\n" << log << "\n";
     }
@@ -166,13 +147,18 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    float angle = 0.005f;
+    vec3 axis = { 0.0f, 1.0f, 1.0f };
+
+    glm_rotate(m_model_matrix, angle, axis);
+
     mat4 mvp_matrix;
     calculate_mvp(view_matrix, projection_matrix, mvp_matrix);
 
-    glUseProgram(m_program);
+    glUseProgram(m_program_id);
 
     glUniformMatrix4fv(
-        glGetUniformLocation(m_program, "u_mvp_matrix"),
+        glGetUniformLocation(m_program_id, "u_mvp_matrix"),
         1,
         GL_FALSE,
         (float*)mvp_matrix
@@ -181,14 +167,14 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
-    const GLint texture_sampler_id = glGetUniformLocation(m_program, "u_texture_sampler");
+    const GLint texture_sampler_id = glGetUniformLocation(m_program_id, "u_texture_sampler");
 
     if (texture_sampler_id != -1) 
     {
         glUniform1i(texture_sampler_id, 0);
     }
 
-    glBindVertexArray(m_vao);
+    glBindVertexArray(m_vao_id);
 
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
@@ -196,12 +182,11 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
 void Renderer::calculate_mvp(
     mat4 view_matrix,
     mat4 projection_matrix,
-    mat4 out_mvp_matrix)
+    mat4 out_mvp_matrix
+) 
 {
-    glm_rotate(m_model_matrix, 0.005f, (vec3){0.0f, 1.0f, 1.0f});
-
     mat4 view_projection_matrix;
-
     glm_mat4_mul(projection_matrix, view_matrix, view_projection_matrix);
+
     glm_mat4_mul(view_projection_matrix, m_model_matrix, out_mvp_matrix);
 }

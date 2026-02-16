@@ -20,7 +20,7 @@ void InputSystem::begin_frame()
     s_previous_mouse_y = s_current_mouse_y;
 }
 
-void InputSystem::on_key(int key, int scancode, int action, int mods)
+void InputSystem::handle_key(int key, int scancode, int action, int mods)
 {
     if (action == GLFW_PRESS)
     {
@@ -32,7 +32,7 @@ void InputSystem::on_key(int key, int scancode, int action, int mods)
     }
 }
 
-void InputSystem::on_mouse_button(int button, int action, int mods)
+void InputSystem::handle_mouse_button(int button, int action, int mods)
 {
     if (action == GLFW_PRESS)
     {
@@ -44,7 +44,7 @@ void InputSystem::on_mouse_button(int button, int action, int mods)
     }
 }
 
-void InputSystem::on_cursor_position(double xpos, double ypos)
+void InputSystem::handle_cursor_position(double xpos, double ypos)
 {
     s_current_mouse_x = xpos;
     s_current_mouse_y = ypos;
@@ -74,27 +74,13 @@ double InputSystem::get_mouse_dx()
 {
     const double dx = s_current_mouse_x - s_previous_mouse_x;
 
-    if (dx > 50.0)
-    {
-        return 0.0;
-    }
-    else
-    {
-        return s_current_mouse_x - s_previous_mouse_x;
-    }
+    return dx > 50.0 ? 0.0 : dx;
 }
 
 double InputSystem::get_mouse_dy()
 {
     const double dy = s_current_mouse_y - s_previous_mouse_y;
 
-    if (dy > 50.0)
-    {
-        return 0.0;
-    }
-    else
-    {
-        return s_current_mouse_y - s_previous_mouse_y;
-    }
+    return dy > 50.0 ? 0.0 : dy;
 }
 

@@ -12,17 +12,6 @@ void Camera::set_perspective(float field_of_view, float aspect_ratio, float near
     rebuild_projection_matrix();
 }
 
-void Camera::rebuild_projection_matrix()
-{
-    glm_perspective(
-        m_field_of_view,
-        m_aspect_ratio,
-        m_near_plane,
-        m_far_plane,
-        m_projection_matrix
-    );
-}
-
 void Camera::rebuild_view_matrix()
 {
     vec3 forward;
@@ -34,16 +23,29 @@ void Camera::rebuild_view_matrix()
     glm_lookat(
         m_position, 
         target, 
-        (vec3){0.f, 1.f, 0.f}, 
+        GLM_YUP, 
         m_view_matrix
     );
 }
 
-mat4& Camera::get_view_matrix() {
+void Camera::rebuild_projection_matrix()
+{
+    glm_perspective(
+        m_field_of_view,
+        m_aspect_ratio,
+        m_near_plane,
+        m_far_plane,
+        m_projection_matrix
+    );
+}
+
+mat4& Camera::get_view_matrix() 
+{
     return m_view_matrix;
 }
 
-mat4& Camera::get_projection_matrix() {
+mat4& Camera::get_projection_matrix() 
+{
     return m_projection_matrix;
 }
 
@@ -54,10 +56,9 @@ vec3& Camera::get_position()
 
 void Camera::set_position(float x, float y, float z)
 {
-    glm_vec3_copy(
-        (vec3){ x, y, z }, 
-        m_position
-    );
+    m_position[0] = x;
+    m_position[1] = y;
+    m_position[2] = z;
 }
 
 float Camera::get_yaw() const
@@ -76,18 +77,16 @@ void Camera::get_forward(vec3 out_forward) const
     out_forward[1] = sinf(m_pitch);
     out_forward[2] = sinf(m_yaw) * cosf(m_pitch);
 
-    glm_vec3_normalize(out_forward);
+    cglm_utils::vec3_normalize_safe(out_forward);
 }
 
 void Camera::get_right(vec3 out_right) const 
 {
-    vec3 world_up = { 0.0f, 1.0f, 0.0f };
-
     vec3 forward;
     get_forward(forward);
 
-    glm_vec3_cross(forward, world_up, out_right);
-    glm_vec3_normalize(out_right);
+    glm_vec3_cross(forward, GLM_YUP, out_right);
+    cglm_utils::vec3_normalize_safe(out_right);
 }
 
 void Camera::get_up(vec3 out_up) const
@@ -111,7 +110,7 @@ void Camera::set_pitch(float pitch)
     m_pitch = glm_rad(pitch);
 }
 
-void Camera::update(float dt)
+void Camera::update(double dt)
 {
     vec3 input_value = GLM_VEC3_ZERO_INIT;
 
@@ -135,23 +134,24 @@ void Camera::update(float dt)
         input_value[0] += 1.0f;
     }
 
-    cglm_utils::normalize_vec3_safe(input_value);
+    cglm_utils::vec3_normalize_safe(input_value);
 
     vec3 right, forward;
     get_forward(forward);
     get_right(right);
 
-    vec3 flat_forward = { forward[0], 0.0f, forward[2] };
+    vec3 flat_forward;
+    glm_vec3_copy(forward, flat_forward);
+    flat_forward[1] = 0.0f;
 
-    cglm_utils::normalize_vec3_safe(flat_forward);
+    cglm_utils::vec3_normalize_safe(flat_forward);
 
     vec3 delta_position;
     glm_vec3_scale(flat_forward, input_value[2], flat_forward);
     glm_vec3_scale(right, input_value[0], right);
-
     glm_vec3_add(flat_forward, right, delta_position);
 
-    cglm_utils::normalize_vec3_safe(delta_position);
+    cglm_utils::vec3_normalize_safe(delta_position);
 
     glm_vec3_scale(delta_position, dt * m_speed, delta_position);
     glm_vec3_add(m_position, delta_position, m_position);

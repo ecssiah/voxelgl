@@ -9,7 +9,7 @@ public:
 
     void set_perspective(float field_of_view, float aspect_ratio, float near_plane, float far_plane);
 
-    void update(float dt);
+    void update(double dt);
 
     mat4& get_view_matrix();
     mat4& get_projection_matrix();
@@ -18,14 +18,14 @@ public:
     void set_position(float x, float y, float z);
 
     float get_yaw() const;
+    void set_yaw(float yaw);
+
     float get_pitch() const;
+    void set_pitch(float pitch);
 
     void get_forward(vec3 out_forward) const;
     void get_right(vec3 out_right) const;
     void get_up(vec3 out_up) const;
-
-    void set_yaw(float yaw);
-    void set_pitch(float pitch);
 
 private:
 

@@ -5,7 +5,7 @@
 namespace stb_utils
 {
 
-inline GLuint load_texture_2d(const char* path)
+inline GLuint load_texture_2d(const char* filename)
 {
     int width, height, channels;
 
@@ -13,7 +13,7 @@ inline GLuint load_texture_2d(const char* path)
 
     unsigned char* pixel_data = 
         stbi_load(
-            path,
+            filename,
             &width,
             &height,
             &channels,
@@ -22,7 +22,7 @@ inline GLuint load_texture_2d(const char* path)
 
     if (!pixel_data) 
     {
-        std::cerr << "Failed to load image: " << path << "\n";
+        std::cerr << "Failed to load image: " << filename << "\n";
 
         return 0;
     }
