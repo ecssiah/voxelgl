@@ -22,10 +22,13 @@ void Camera::rebuild_view_matrix()
     vec3 target;
     glm_vec3_add(m_position, forward, target);
 
+    vec3 up;
+    glm_vec3_copy(GLM_YUP, up);
+
     glm_lookat(
         m_position, 
         target, 
-        GLM_YUP, 
+        up,
         m_view_matrix
     );
 }
@@ -87,7 +90,10 @@ void Camera::get_right(vec3 out_right) const
     vec3 forward;
     get_forward(forward);
 
-    glm_vec3_cross(forward, GLM_YUP, out_right);
+    vec3 up;
+    glm_vec3_copy(GLM_YUP, up);
+
+    glm_vec3_cross(forward, up, out_right);
     cglm_utils::vec3_normalize_safe(out_right);
 }
 
