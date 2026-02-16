@@ -118,11 +118,11 @@ float WindowSystem::get_aspect_ratio()
     return WINDOW_WIDTH / static_cast<float>(WINDOW_HEIGHT);
 }
 
-float WindowSystem::get_dt() 
+double WindowSystem::get_dt() 
 {
     const double current_time = glfwGetTime();
 
-    const float dt = static_cast<float>(current_time - s_last_time);
+    const double dt = current_time - s_last_time;
 
     s_last_time = current_time;
     

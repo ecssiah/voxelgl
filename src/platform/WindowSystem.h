@@ -27,7 +27,8 @@ public:
     static std::string get_version_info();
 
     static float get_aspect_ratio();
-    static float get_dt();
+    
+    static double get_dt();
 
     static void set_cursor_enabled(bool enabled);
 
