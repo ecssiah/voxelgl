@@ -1,6 +1,6 @@
 #include "Renderer.h"
-#include "VoxelMesh.h"
-#include "utils.h"
+#include "VoxelData.h"
+#include "utils/stb_utils.h"
 
 #include <iostream>
 #include <fstream>
@@ -76,8 +76,8 @@ bool Renderer::start()
         3,
         GL_FLOAT,
         GL_FALSE,
-        sizeof(VoxelVertex),
-        (void*)offsetof(VoxelVertex, position_array)
+        sizeof(VoxelVertexData),
+        (void*)offsetof(VoxelVertexData, position_array)
     );
 
     glVertexAttribPointer(
@@ -85,8 +85,8 @@ bool Renderer::start()
         3,
         GL_FLOAT,
         GL_FALSE,
-        sizeof(VoxelVertex),
-        (void*)offsetof(VoxelVertex, normal_array)
+        sizeof(VoxelVertexData),
+        (void*)offsetof(VoxelVertexData, normal_array)
     );
 
     glVertexAttribPointer(
@@ -94,8 +94,8 @@ bool Renderer::start()
         2, 
         GL_FLOAT, 
         GL_FALSE,
-        sizeof(VoxelVertex),
-        (void*)offsetof(VoxelVertex, uv_array)
+        sizeof(VoxelVertexData),
+        (void*)offsetof(VoxelVertexData, uv_array)
     );
 
     glEnableVertexAttribArray(0);
@@ -145,7 +145,7 @@ bool Renderer::start()
     glDeleteShader(shader_vert);
     glDeleteShader(shader_frag);
 
-    m_texture_id = stb_ext::load_texture_2d("assets/textures/lion.png");
+    m_texture_id = stb_utils::load_texture_2d("assets/textures/lion.png");
 
     if (m_texture_id == 0) 
     {

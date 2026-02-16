@@ -1,13 +1,13 @@
 #pragma once
 
-struct VoxelVertex 
+struct VoxelVertexData 
 {
     float position_array[3];
     float normal_array[3];
     float uv_array[2];
 };
 
-static constexpr VoxelVertex voxel_vertex_array[] = {
+static constexpr VoxelVertexData voxel_vertex_array[] = {
     {
         { -0.5f, -0.5f, 0.5f },
         { 0, 0, 1 },
