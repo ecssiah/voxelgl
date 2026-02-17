@@ -3,7 +3,6 @@
 #include <cglm/cglm.h>
 
 
-
 class Camera
 {
 
@@ -13,10 +12,10 @@ public:
 
     void update(double dt);
 
-    mat4& get_view_matrix();
-    mat4& get_projection_matrix();
+    void get_view_matrix(mat4 out_view_matrix) const;
+    void get_projection_matrix(mat4 out_projection_matrix) const;
 
-    vec3& get_position();
+    void get_position(vec3 out_position) const;
     void set_position(float x, float y, float z);
 
     float get_yaw() const;

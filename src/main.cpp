@@ -1,7 +1,6 @@
 #include <voxelgl/App.h>
 
 
-
 int main()
 {
     voxelgl::App app;

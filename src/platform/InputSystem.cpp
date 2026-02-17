@@ -1,7 +1,6 @@
 #include "platform/InputSystem.h"
 
 
-
 std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_current_key_array;
 std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_previous_key_array;
 
@@ -12,7 +11,6 @@ double InputSystem::s_current_mouse_x = 0.0;
 double InputSystem::s_current_mouse_y = 0.0;
 double InputSystem::s_previous_mouse_x = 0.0;
 double InputSystem::s_previous_mouse_y = 0.0;
-
 
 
 void InputSystem::begin_frame()

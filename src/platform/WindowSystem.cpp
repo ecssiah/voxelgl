@@ -6,7 +6,6 @@
 #include <iostream>
 
 
-
 void WindowSystem::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     InputSystem::handle_key(key, scancode, action, mods);
@@ -25,7 +24,6 @@ void WindowSystem::cursor_position_callback(GLFWwindow* window, double xpos, dou
 double WindowSystem::s_last_time = 0.0;
 
 GLFWwindow* WindowSystem::s_window = nullptr;
-
 
 
 bool WindowSystem::init() 

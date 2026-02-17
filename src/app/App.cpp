@@ -85,10 +85,11 @@ void App::update(const double dt)
 
 void App::render()
 {
-    m_renderer.render(
-        m_camera.get_view_matrix(), 
-        m_camera.get_projection_matrix()
-    );
+    mat4 view_matrix, projection_matrix;
+    m_camera.get_view_matrix(view_matrix);
+    m_camera.get_projection_matrix(projection_matrix);
+
+    m_renderer.render(view_matrix, projection_matrix);
 }
 
 }

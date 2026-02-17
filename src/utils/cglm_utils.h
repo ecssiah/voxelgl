@@ -1,7 +1,8 @@
-#pragma ounce
+#pragma once
 
 #include <cglm/cglm.h>
 #include <iostream>
+
 
 namespace cglm_utils
 {

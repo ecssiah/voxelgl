@@ -3,7 +3,6 @@
 #include "utils/cglm_utils.h"
 
 
-
 void Camera::set_perspective(float field_of_view, float aspect_ratio, float near_plane, float far_plane) 
 {
     m_field_of_view = field_of_view;
@@ -44,19 +43,19 @@ void Camera::rebuild_projection_matrix()
     );
 }
 
-mat4& Camera::get_view_matrix() 
+void Camera::get_view_matrix(mat4 out_view_matrix) const
 {
-    return m_view_matrix;
+    std::memcpy(out_view_matrix, m_view_matrix, sizeof(mat4));
 }
 
-mat4& Camera::get_projection_matrix() 
+void Camera::get_projection_matrix(mat4 out_projection_matrix) const
 {
-    return m_projection_matrix;
+    std::memcpy(out_projection_matrix, m_projection_matrix, sizeof(mat4));
 }
 
-vec3& Camera::get_position()
+void Camera::get_position(vec3 out_position) const
 {
-    return m_position;
+    std::memcpy(out_position, m_position, sizeof(vec3));
 }
 
 void Camera::set_position(float x, float y, float z)

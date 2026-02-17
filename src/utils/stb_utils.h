@@ -5,7 +5,6 @@
 #include <iostream>
 
 
-
 namespace stb_utils
 {
 
@@ -15,7 +14,7 @@ inline GLuint load_texture_2d(const char* filename)
 
     stbi_set_flip_vertically_on_load(true);
 
-    unsigned char* pixel_data = 
+    stbi_uc* pixel_data = 
         stbi_load(
             filename,
             &width,

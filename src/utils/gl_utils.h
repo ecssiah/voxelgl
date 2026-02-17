@@ -1,8 +1,7 @@
 #pragma once
 
-#include <glad/glad.h>
 #include <iostream>
-
+#include <glad/glad.h>
 
 
 namespace gl_utils

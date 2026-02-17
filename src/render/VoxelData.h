@@ -1,8 +1,9 @@
 #pragma once
 
 
-
 static constexpr float VOXEL_RADIUS = 0.5f;
+static constexpr int VOXEL_INDEX_COUNT = 36;
+
 
 struct VoxelVertexData 
 {
@@ -10,6 +11,7 @@ struct VoxelVertexData
     float normal_array[3];
     float uv_array[2];
 };
+
 
 static constexpr VoxelVertexData VOXEL_VERTEX_ARRAY[] = {
     {
@@ -156,6 +158,7 @@ static constexpr VoxelVertexData VOXEL_VERTEX_ARRAY[] = {
         { 0, 1 },
     },
 };
+
 
 static constexpr unsigned int VOXEL_INDEX_ARRAY[] = {
     0, 1, 2, 2,  3, 0, 

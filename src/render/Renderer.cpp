@@ -5,7 +5,6 @@
 #include <iostream>
 
 
-
 static GLuint compile_shader(GLuint type_id, const char* src) 
 {
     GLuint shader_id = glCreateShader(type_id);
@@ -26,7 +25,6 @@ static GLuint compile_shader(GLuint type_id, const char* src)
 
     return shader_id;
 }
-
 
 
 bool Renderer::start() 
@@ -180,14 +178,10 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
 
     glBindVertexArray(m_vao_id);
 
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, VOXEL_INDEX_COUNT, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::calculate_mvp(
-    mat4 view_matrix,
-    mat4 projection_matrix,
-    mat4 out_mvp_matrix
-) 
+void Renderer::calculate_mvp(mat4 view_matrix,mat4 projection_matrix,mat4 out_mvp_matrix) 
 {
     mat4 view_projection_matrix;
     glm_mat4_mul(projection_matrix, view_matrix, view_projection_matrix);
