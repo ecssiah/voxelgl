@@ -34,7 +34,7 @@ Cell* World::get_cell(ivec3 grid_position)
 }
 
 void World::set_block_kind(ivec3 grid_position, BlockKind block_type)
-{   
+{
     if (grid_position_is_valid(grid_position))
     {
         const SectorIndex sector_index = grid_position_to_sector_index(grid_position);
@@ -45,17 +45,12 @@ void World::set_block_kind(ivec3 grid_position, BlockKind block_type)
 
         cell->m_block_kind = block_type;
 
-        printf("Sector: %d Cell: %d\n", sector_index, cell_index);
-        printf("Grid: %d %d %d\n", grid_position[0], grid_position[1], grid_position[2]);
-
         update_cell_face_mask(grid_position, cell);
 
         for (int cell_face = 0; cell_face < CELL_FACE_COUNT; ++cell_face)
         {
             ivec3 neighbor_grid_position;
             glm_ivec3_add(grid_position, CELL_FACE_OFFSET_ARRAY[cell_face], neighbor_grid_position);
-
-            printf("NGP: %d %d %d\n", neighbor_grid_position[0], neighbor_grid_position[1], neighbor_grid_position[2]);
 
             Cell* neighbor_cell = get_cell(neighbor_grid_position);
 

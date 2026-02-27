@@ -1,5 +1,5 @@
 #include "render/renderer.h"
-#include "render/voxel_data.h"
+#include "render/sector_mesh.h"
 #include "app/world/grid.h"
 #include "utils/shader_utils.h"
 #include "utils/stb_utils.h"
@@ -9,64 +9,6 @@
 
 bool Renderer::init() 
 {
-    glGenVertexArrays(1, &m_vao_id);
-
-    glGenBuffers(1, &m_vbo_id);
-    glGenBuffers(1, &m_ebo_id);
-
-    glBindVertexArray(m_vao_id);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_id);
-
-    glBufferData(
-        GL_ARRAY_BUFFER, 
-        sizeof(VOXEL_VERTEX_ARRAY), 
-        VOXEL_VERTEX_ARRAY, 
-        GL_STATIC_DRAW
-    );
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo_id);
-
-    glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, 
-        sizeof(VOXEL_INDEX_ARRAY),
-        VOXEL_INDEX_ARRAY, 
-        GL_STATIC_DRAW
-    );
-
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VoxelVertexData),
-        (void*)offsetof(VoxelVertexData, position_array)
-    );
-
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VoxelVertexData),
-        (void*)offsetof(VoxelVertexData, normal_array)
-    );
-
-    glVertexAttribPointer(
-        2, 
-        2, 
-        GL_FLOAT, 
-        GL_FALSE,
-        sizeof(VoxelVertexData),
-        (void*)offsetof(VoxelVertexData, uv_array)
-    );
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-
     const std::string vert_src = 
         shader_utils::load_text_file("assets/shaders/voxel.vert");
 
@@ -85,6 +27,15 @@ bool Renderer::init()
         shader_utils::compile_shader(GL_FRAGMENT_SHADER,frag_src.c_str());
 
     m_program_id = glCreateProgram();
+
+    m_mvp_uniform_location = glGetUniformLocation(m_program_id, "u_mvp_matrix");
+    m_texture_sampler_location = glGetUniformLocation(m_program_id, "u_texture_sampler");
+
+    if (m_texture_sampler_location != -1) 
+    {
+        glUseProgram(m_program_id);
+        glUniform1i(m_texture_sampler_location, 0);
+    }
 
     glAttachShader(m_program_id, shader_vert);
     glAttachShader(m_program_id, shader_frag);
@@ -121,7 +72,7 @@ bool Renderer::init()
 
 void Renderer::update(World* world)
 {
-    for (SectorIndex sector_index = 0; sector_index < WORLD_SIZE_IN_SECTORS; sector_index++)
+    for (SectorIndex sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; sector_index++)
     {
         Sector* sector = &world->m_sector_array[sector_index];
 
@@ -151,9 +102,67 @@ void Renderer::build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh)
 
     glm_vec3_copy(sector_world_position, out_sector_mesh->m_sector_world_position);
 
-    
+    out_sector_mesh->m_vertex_vec.clear();
+    out_sector_mesh->m_index_vec.clear();
+
+    for (CellIndex cell_index = 0; cell_index < SECTOR_VOLUME_IN_CELLS; ++cell_index)
+    {
+        Cell* cell = &sector->m_cell_array[cell_index];
+
+        if (cell->m_block_kind == BLOCK_KIND_NONE)
+        {
+            continue;
+        }
+
+        if (cell->m_cell_face_mask == 0)
+        {
+            continue;
+        }
+
+        ivec3 cell_grid_position;
+        indices_to_grid_position(sector->m_sector_index, cell_index, cell_grid_position);
+
+        vec3 cell_world_position;
+        grid_position_to_world_position(cell_grid_position, cell_world_position);
+
+        for (int cell_face = 0; cell_face < CELL_FACE_COUNT; ++cell_face)
+        {
+            if (!(cell->m_cell_face_mask & (1u << cell_face)))
+            {
+                continue;
+            }
+
+            emit_face(out_sector_mesh, cell_world_position, cell_face);
+        }
+    }
 
     out_sector_mesh->m_version = sector->m_version;
+}
+
+void Renderer::emit_face(SectorMesh* sector_mesh, vec3 face_world_position, int cell_face)
+{
+    uint32_t base_index = sector_mesh->m_vertex_vec.size();
+
+    for (int vertex_index = 0; vertex_index < 4; ++vertex_index)
+    {
+        VertexData v = {};
+
+        glm_vec3_add(
+            face_world_position,
+            FACE_VERTEX_ARRAY[cell_face][vertex_index],
+            v.m_position
+        );
+
+        sector_mesh->m_vertex_vec.push_back(v);
+    }
+
+    sector_mesh->m_index_vec.push_back(base_index + 0);
+    sector_mesh->m_index_vec.push_back(base_index + 1);
+    sector_mesh->m_index_vec.push_back(base_index + 2);
+
+    sector_mesh->m_index_vec.push_back(base_index + 2);
+    sector_mesh->m_index_vec.push_back(base_index + 3);
+    sector_mesh->m_index_vec.push_back(base_index + 0);
 }
 
 void Renderer::upload_mesh(SectorMesh* sector_mesh, GpuMesh* out_gpu_mesh)
@@ -223,24 +232,17 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
-    const GLint texture_sampler_id = glGetUniformLocation(m_program_id, "u_texture_sampler");
-
-    if (texture_sampler_id != -1) 
-    {
-        glUniform1i(texture_sampler_id, 0);
-    }
-
     for (SectorIndex sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; sector_index++)
     {
         GpuMesh* gpu_mesh = &m_gpu_mesh_cache[sector_index];
 
-        if (gpu_mesh) 
+        if (gpu_mesh->m_vao_id != 0)
         {
             mat4 model_view_projection_matrix;
             glm_mat4_mul(m_view_projection_matrix, gpu_mesh->m_model_matrix, model_view_projection_matrix);
 
             glUniformMatrix4fv(
-                glGetUniformLocation(m_program_id, "u_mvp_matrix"),
+                m_mvp_uniform_location,
                 1,
                 GL_FALSE,
                 (float*)model_view_projection_matrix

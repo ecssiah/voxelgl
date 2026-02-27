@@ -158,3 +158,15 @@ inline CellIndex grid_position_to_cell_index(ivec3 grid_position)
 
     return cell_coordinate_to_cell_index(cell_coordinate);
 }
+
+inline void indices_to_grid_position(SectorIndex sector_index, CellIndex cell_index, ivec3 out_grid_position)
+{
+    SectorCoordinate sector_coordinate;
+    CellCoordinate cell_coordinate;
+
+    sector_index_to_sector_coordinate(sector_index, sector_coordinate);
+    cell_index_to_cell_coordinate(cell_index, cell_coordinate);
+
+    glm_ivec3_scale(sector_coordinate, SECTOR_SIZE_IN_CELLS, out_grid_position);
+    glm_ivec3_add(out_grid_position, cell_coordinate, out_grid_position);
+}
