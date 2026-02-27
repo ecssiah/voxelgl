@@ -1,31 +1,25 @@
 #pragma once
 
-#include "app/Camera.h"
-#include "app/world/World.h"
-#include "render/Renderer.h"
+#include "app/camera.h"
+#include "app/world/world.h"
+#include "render/renderer.h"
 
 namespace voxelgl 
 {
 
-class App 
+struct App 
 {
+    Camera m_camera;
+    Renderer m_renderer;
 
-public:
+    World m_world;
     
     bool init();
     void run();
     void exit();
 
-private:
-
-    Camera m_camera;
-    Renderer m_renderer;
-
-    World m_world;
-
     void update(double dt);
     void render();
-
 };
 
 } // namespace voxelgl

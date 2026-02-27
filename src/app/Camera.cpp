@@ -1,6 +1,6 @@
-#include "Camera.h"
-#include "platform/InputSystem.h"
-#include "platform/WindowSystem.h"
+#include "camera.h"
+#include "platform/input_system.h"
+#include "platform/window_system.h"
 #include "utils/cglm_utils.h"
 
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <cglm/cglm.h>
 
 struct GpuMesh
 {
@@ -11,4 +12,6 @@ struct GpuMesh
     GLuint m_ebo_id;
 
     uint32_t m_index_count;
+
+    mat4 m_model_matrix;
 };

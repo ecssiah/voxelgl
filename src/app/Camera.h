@@ -4,7 +4,6 @@
 
 struct Camera
 {
-
     float m_field_of_view = 60.0f;
     float m_aspect_ratio = 16.0f / 9.0f;
     float m_near_plane = 0.1f;
@@ -46,5 +45,4 @@ struct Camera
 
     void rebuild_projection_matrix();
     void rebuild_view_matrix();
-
 };

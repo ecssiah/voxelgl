@@ -49,15 +49,15 @@ target_sources(
     voxelgl 
     PRIVATE
     vendor/glad/src/glad.c
-    src/app/App.cpp
-    src/app/Camera.cpp
-    src/app/World/Cell.cpp
-    src/app/World/Sector.cpp
-    src/app/World/World.cpp
-    src/platform/WindowSystem.cpp
-    src/platform/InputSystem.cpp
-    src/render/Renderer.cpp
-    src/render/STBImageLoader.cpp
+    src/platform/window_system.cpp
+    src/platform/input_system.cpp
+    src/render/renderer.cpp
+    src/render/stb_image_loader.cpp
+    src/app/app.cpp
+    src/app/camera.cpp
+    src/app/world/cell.cpp
+    src/app/world/sector.cpp
+    src/app/world/world.cpp
 )
 
 target_compile_definitions(

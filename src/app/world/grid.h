@@ -28,12 +28,12 @@ inline constexpr float CELL_VOLUME = CELL_SIZE * CELL_SIZE * CELL_SIZE;
 
 inline bool sector_index_is_valid(SectorIndex sector_index)
 {
-    return sector_index >= 0 && sector_index < WORLD_VOLUME_IN_SECTORS;
+    return sector_index < WORLD_VOLUME_IN_SECTORS;
 }
 
 inline bool cell_index_is_valid(CellIndex cell_index)
 {
-    return cell_index >= 0 && cell_index < SECTOR_VOLUME_IN_CELLS;
+    return cell_index < SECTOR_VOLUME_IN_CELLS;
 }
 
 inline bool sector_coordinate_is_valid(SectorCoordinate sector_coordinate)
@@ -57,10 +57,17 @@ inline bool cell_coordinate_is_valid(CellCoordinate cell_coordinate)
 inline bool grid_position_is_valid(ivec3 grid_position)
 {
     const bool in_x_range = grid_position[0] >= -WORLD_RADIUS_IN_CELLS && grid_position[0] <= WORLD_RADIUS_IN_CELLS;
-    const bool in_y_range = grid_position[0] >= -WORLD_RADIUS_IN_CELLS && grid_position[0] <= WORLD_RADIUS_IN_CELLS;
-    const bool in_z_range = grid_position[0] >= -WORLD_RADIUS_IN_CELLS && grid_position[0] <= WORLD_RADIUS_IN_CELLS;
+    const bool in_y_range = grid_position[1] >= -WORLD_RADIUS_IN_CELLS && grid_position[1] <= WORLD_RADIUS_IN_CELLS;
+    const bool in_z_range = grid_position[2] >= -WORLD_RADIUS_IN_CELLS && grid_position[2] <= WORLD_RADIUS_IN_CELLS;
 
     return in_x_range && in_y_range && in_z_range;
+}
+
+inline void grid_position_to_world_position(ivec3 grid_position, vec3 out_world_position)
+{
+    out_world_position[0] = (float)grid_position[0] * CELL_SIZE;
+    out_world_position[1] = (float)grid_position[1] * CELL_SIZE;
+    out_world_position[2] = (float)grid_position[2] * CELL_SIZE;
 }
 
 inline void sector_index_to_sector_coordinate(SectorIndex sector_index, SectorCoordinate out_sector_coordinate)
@@ -83,6 +90,11 @@ inline SectorIndex sector_coordinate_to_sector_index(SectorCoordinate sector_coo
         sector_coordinate_indexable[2] * WORLD_AREA_IN_SECTORS;
 
     return out_sector_index;
+}
+
+inline void sector_coordinate_to_grid_position(SectorCoordinate sector_coordinate, ivec3 out_grid_position)
+{
+    glm_ivec3_scale(sector_coordinate, SECTOR_SIZE_IN_CELLS, out_grid_position);
 }
 
 inline void cell_index_to_cell_coordinate(CellIndex cell_index, CellCoordinate out_cell_coordinate)
@@ -113,9 +125,9 @@ inline void grid_position_to_sector_coordinate(ivec3 grid_position, SectorCoordi
     glm_ivec3_adds(grid_position, WORLD_RADIUS_IN_CELLS, grid_position_indexable);
 
     ivec3 sector_coordinate_indexable;
-    glm_ivec3_divs(grid_position_indexable, SECTOR_SIZE_IN_CELLS, out_sector_coordinate);
+    glm_ivec3_divs(grid_position_indexable, SECTOR_SIZE_IN_CELLS, sector_coordinate_indexable);
 
-    glm_ivec3_subs(out_sector_coordinate, WORLD_RADIUS_IN_SECTORS, out_sector_coordinate);
+    glm_ivec3_subs(sector_coordinate_indexable, WORLD_RADIUS_IN_SECTORS, out_sector_coordinate);
 }
 
 inline void grid_position_to_cell_coordinate(ivec3 grid_position, CellCoordinate out_cell_coordinate)
@@ -128,10 +140,10 @@ inline void grid_position_to_cell_coordinate(ivec3 grid_position, CellCoordinate
     cell_coordinate_indexable[1] = grid_position_indexable[1] % SECTOR_SIZE_IN_CELLS;
     cell_coordinate_indexable[2] = grid_position_indexable[2] % SECTOR_SIZE_IN_CELLS;
 
-    glm_ivec3_subs(out_cell_coordinate, SECTOR_RADIUS_IN_CELLS, out_cell_coordinate);
+    glm_ivec3_subs(cell_coordinate_indexable, SECTOR_RADIUS_IN_CELLS, out_cell_coordinate);
 }
 
-inline uint32_t grid_position_to_sector_index(ivec3 grid_position)
+inline SectorIndex grid_position_to_sector_index(ivec3 grid_position)
 {
     SectorCoordinate sector_coordinate;
     grid_position_to_sector_coordinate(grid_position, sector_coordinate);
@@ -139,7 +151,7 @@ inline uint32_t grid_position_to_sector_index(ivec3 grid_position)
     return sector_coordinate_to_sector_index(sector_coordinate);
 }
 
-inline uint32_t grid_position_to_cell_index(ivec3 grid_position)
+inline CellIndex grid_position_to_cell_index(ivec3 grid_position)
 {
     CellCoordinate cell_coordinate;
     grid_position_to_cell_coordinate(grid_position, cell_coordinate);

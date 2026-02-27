@@ -1,5 +1,4 @@
-#include <voxelgl/App.h>
-
+#include <voxelgl/app.h>
 
 int main()
 {

@@ -1,5 +1,5 @@
-#include "platform/WindowSystem.h"
-#include "platform/InputSystem.h"
+#include "platform/window_system.h"
+#include "platform/input_system.h"
 
 #include <glad/glad.h>
 #include <sstream>

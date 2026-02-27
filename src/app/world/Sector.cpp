@@ -1,6 +1,4 @@
-#include "Sector.h"
-
-#include "metrics.h"
+#include "sector.h"
 
 void Sector::init(SectorIndex sector_index)
 {

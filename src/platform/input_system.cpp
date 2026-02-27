@@ -1,4 +1,4 @@
-#include "platform/InputSystem.h"
+#include "platform/input_system.h"
 
 
 std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_current_key_array;

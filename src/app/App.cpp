@@ -1,14 +1,12 @@
-#include "voxelgl/App.h"
-
-#include "../platform/InputSystem.h"
-#include "../platform/WindowSystem.h"
-#include "render/Renderer.h"
+#include "voxelgl/app.h"
+#include "app/world/cell.h"
+#include "platform/input_system.h"
+#include "platform/window_system.h"
+#include "render/renderer.h"
 
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
-
-
 
 namespace voxelgl
 {
@@ -48,6 +46,11 @@ bool App::init()
     {
         return false;
     }
+    
+    m_world.set_block_kind(ivec3{0, 0, 0}, BLOCK_KIND_EAGLE);
+    m_world.set_block_kind(ivec3{0, 1, 0}, BLOCK_KIND_EAGLE);
+    m_world.set_block_kind(ivec3{0, -1, 0}, BLOCK_KIND_EAGLE);
+    m_world.set_block_kind(ivec3{1, 0, 0}, BLOCK_KIND_EAGLE);
 
     return true;
 }

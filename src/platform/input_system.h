@@ -3,11 +3,18 @@
 #include <GLFW/glfw3.h>
 #include <array>
 
-
-class InputSystem
+struct InputSystem
 {
+    static std::array<bool, GLFW_KEY_LAST + 1> s_current_key_array;
+    static std::array<bool, GLFW_KEY_LAST + 1> s_previous_key_array;
 
-public:
+    static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> s_current_mouse_array;
+    static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> s_previous_mouse_array;
+
+    static double s_current_mouse_x;
+    static double s_current_mouse_y;
+    static double s_previous_mouse_x;
+    static double s_previous_mouse_y;
 
     static void begin_frame();
 
@@ -25,18 +32,4 @@ public:
     static double get_mouse_y();
     static double get_mouse_dx();
     static double get_mouse_dy();
-
-private:
-
-    static std::array<bool, GLFW_KEY_LAST + 1> s_current_key_array;
-    static std::array<bool, GLFW_KEY_LAST + 1> s_previous_key_array;
-
-    static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> s_current_mouse_array;
-    static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> s_previous_mouse_array;
-
-    static double s_current_mouse_x;
-    static double s_current_mouse_y;
-    static double s_previous_mouse_x;
-    static double s_previous_mouse_y;
-
 };
