@@ -1,7 +1,24 @@
 #include "Camera.h"
 #include "platform/InputSystem.h"
+#include "platform/WindowSystem.h"
 #include "utils/cglm_utils.h"
 
+
+bool Camera::init()
+{
+    set_position(0.0f, 0.0f, 5.0f);
+    set_yaw(-90.0f);
+    set_pitch(0.0f);
+
+    set_perspective(
+        glm_rad(60.0f),
+        WindowSystem::get_aspect_ratio(),
+        0.1f,
+        1000.0f
+    );
+
+    return true;
+}
 
 void Camera::set_perspective(float field_of_view, float aspect_ratio, float near_plane, float far_plane) 
 {
@@ -43,17 +60,17 @@ void Camera::rebuild_projection_matrix()
     );
 }
 
-void Camera::get_view_matrix(mat4 out_view_matrix) const
+void Camera::get_view_matrix(mat4 out_view_matrix) 
 {
     std::memcpy(out_view_matrix, m_view_matrix, sizeof(mat4));
 }
 
-void Camera::get_projection_matrix(mat4 out_projection_matrix) const
+void Camera::get_projection_matrix(mat4 out_projection_matrix) 
 {
     std::memcpy(out_projection_matrix, m_projection_matrix, sizeof(mat4));
 }
 
-void Camera::get_position(vec3 out_position) const
+void Camera::get_position(vec3 out_position) 
 {
     std::memcpy(out_position, m_position, sizeof(vec3));
 }
@@ -65,17 +82,17 @@ void Camera::set_position(float x, float y, float z)
     m_position[2] = z;
 }
 
-float Camera::get_yaw() const
+float Camera::get_yaw()
 {
     return glm_deg(m_yaw);
 }
 
-float Camera::get_pitch() const
+float Camera::get_pitch() 
 {
     return glm_deg(m_pitch);
 }
 
-void Camera::get_forward(vec3 out_forward) const 
+void Camera::get_forward(vec3 out_forward) 
 {
     out_forward[0] = cosf(m_yaw) * cosf(m_pitch);
     out_forward[1] = sinf(m_pitch);
@@ -84,7 +101,7 @@ void Camera::get_forward(vec3 out_forward) const
     cglm_utils::vec3_normalize_safe(out_forward);
 }
 
-void Camera::get_right(vec3 out_right) const 
+void Camera::get_right(vec3 out_right)
 {
     vec3 forward;
     get_forward(forward);
@@ -96,7 +113,7 @@ void Camera::get_right(vec3 out_right) const
     cglm_utils::vec3_normalize_safe(out_right);
 }
 
-void Camera::get_up(vec3 out_up) const
+void Camera::get_up(vec3 out_up)
 {
     vec3 forward, right;
 

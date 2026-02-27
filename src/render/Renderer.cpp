@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "VoxelData.h"
+#include "app/world/metrics.h"
 #include "utils/file_utils.h"
 #include "utils/stb_utils.h"
 #include <iostream>
@@ -26,8 +27,7 @@ static GLuint compile_shader(GLuint type_id, const char* src)
     return shader_id;
 }
 
-
-bool Renderer::start() 
+bool Renderer::init() 
 {
     glGenVertexArrays(1, &m_vao_id);
 
@@ -144,6 +144,67 @@ bool Renderer::start()
     return true;
 }
 
+void Renderer::update(World* world)
+{
+    for (SectorIndex sector_index = 0; sector_index < WORLD_SIZE_IN_SECTORS; sector_index++)
+    {
+        SectorMesh sector_mesh;
+
+        build_sector_mesh(&world->m_sector_array[sector_index], &sector_mesh);
+
+        GpuMesh gpu_mesh;
+
+        upload_mesh(&sector_mesh, &gpu_mesh);
+    }
+}
+
+void Renderer::build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh)
+{
+    
+}
+
+void Renderer::upload_mesh(SectorMesh* sector_mesh, GpuMesh* gpu_mesh)
+{
+    glGenVertexArrays(1, &gpu_mesh->m_vao_id);
+    glGenBuffers(1, &gpu_mesh->m_vbo_id);
+    glGenBuffers(1, &gpu_mesh->m_ebo_id);
+
+    glBindVertexArray(gpu_mesh->m_vao_id);
+
+    glBindBuffer(GL_ARRAY_BUFFER, gpu_mesh->m_vbo_id);
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sector_mesh->m_vertex_vec.size() * sizeof(VertexData),
+        sector_mesh->m_vertex_vec.data(),
+        GL_STATIC_DRAW
+    );
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gpu_mesh->m_ebo_id);
+
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        sector_mesh->m_index_vec.size() * sizeof(uint32_t),
+        sector_mesh->m_index_vec.data(),
+        GL_STATIC_DRAW
+    );
+
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VertexData),
+        (void*)offsetof(VertexData, m_position)
+    );
+
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+
+    gpu_mesh->m_index_count = sector_mesh->m_index_vec.size();
+}
+
 void Renderer::render(mat4 view_matrix, mat4 projection_matrix) 
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -181,10 +242,22 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
     glDrawElements(GL_TRIANGLES, VOXEL_INDEX_COUNT, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::calculate_mvp(mat4 view_matrix,mat4 projection_matrix,mat4 out_mvp_matrix) 
+void Renderer::calculate_mvp(mat4 view_matrix, mat4 projection_matrix, mat4 out_mvp_matrix) 
 {
     mat4 view_projection_matrix;
     glm_mat4_mul(projection_matrix, view_matrix, view_projection_matrix);
 
     glm_mat4_mul(view_projection_matrix, m_model_matrix, out_mvp_matrix);
+}
+
+void Renderer::draw_mesh(GpuMesh* gpu_mesh)
+{
+    glBindVertexArray(gpu_mesh->m_vao_id);
+
+    glDrawElements(
+        GL_TRIANGLES,
+        gpu_mesh->m_index_count,
+        GL_UNSIGNED_INT,
+        0
+    );
 }

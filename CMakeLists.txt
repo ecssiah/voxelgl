@@ -51,6 +51,9 @@ target_sources(
     vendor/glad/src/glad.c
     src/app/App.cpp
     src/app/Camera.cpp
+    src/app/World/Cell.cpp
+    src/app/World/Sector.cpp
+    src/app/World/World.cpp
     src/platform/WindowSystem.cpp
     src/platform/InputSystem.cpp
     src/render/Renderer.cpp

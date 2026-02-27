@@ -1,9 +1,8 @@
 #pragma once
 
 #include "app/Camera.h"
+#include "app/world/World.h"
 #include "render/Renderer.h"
-
-
 
 namespace voxelgl 
 {
@@ -13,7 +12,7 @@ class App
 
 public:
     
-    bool start();
+    bool init();
     void run();
     void exit();
 
@@ -22,7 +21,9 @@ private:
     Camera m_camera;
     Renderer m_renderer;
 
-    void update(const double dt);
+    World m_world;
+
+    void update(double dt);
     void render();
 
 };

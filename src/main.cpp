@@ -5,7 +5,7 @@ int main()
 {
     voxelgl::App app;
 
-    if (app.start()) 
+    if (app.init()) 
     {
         app.run();
         app.exit();

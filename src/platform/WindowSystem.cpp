@@ -54,6 +54,8 @@ bool WindowSystem::create(const char* title)
     glfwSetMouseButtonCallback(s_window, mouse_button_callback);
     glfwSetCursorPosCallback(s_window, cursor_position_callback);
 
+    set_cursor_enabled(false);
+
     return true;
 }
 

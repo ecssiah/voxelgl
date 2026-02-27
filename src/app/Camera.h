@@ -2,36 +2,8 @@
 
 #include <cglm/cglm.h>
 
-
-class Camera
+struct Camera
 {
-
-public:
-
-    void set_perspective(float field_of_view, float aspect_ratio, float near_plane, float far_plane);
-
-    void update(double dt);
-
-    void get_view_matrix(mat4 out_view_matrix) const;
-    void get_projection_matrix(mat4 out_projection_matrix) const;
-
-    void get_position(vec3 out_position) const;
-    void set_position(float x, float y, float z);
-
-    float get_yaw() const;
-    void set_yaw(float yaw);
-
-    float get_pitch() const;
-    void set_pitch(float pitch);
-
-    void get_forward(vec3 out_forward) const;
-    void get_right(vec3 out_right) const;
-    void get_up(vec3 out_up) const;
-
-private:
-
-    void rebuild_projection_matrix();
-    void rebuild_view_matrix();
 
     float m_field_of_view = 60.0f;
     float m_aspect_ratio = 16.0f / 9.0f;
@@ -49,5 +21,30 @@ private:
 
     float m_speed = 1.5f;
     float m_sensitivity = 0.4f;
+
+    bool init();
+
+    void set_perspective(float field_of_view, float aspect_ratio, float near_plane, float far_plane);
+
+    void update(double dt);
+
+    void get_view_matrix(mat4 out_view_matrix);
+    void get_projection_matrix(mat4 out_projection_matrix);
+
+    void get_position(vec3 out_position);
+    void set_position(float x, float y, float z);
+
+    float get_yaw();
+    void set_yaw(float yaw);
+
+    float get_pitch();
+    void set_pitch(float pitch);
+
+    void get_forward(vec3 out_forward);
+    void get_right(vec3 out_right);
+    void get_up(vec3 out_up);
+
+    void rebuild_projection_matrix();
+    void rebuild_view_matrix();
 
 };

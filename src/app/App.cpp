@@ -13,7 +13,7 @@
 namespace voxelgl
 {
 
-bool App::start()
+bool App::init()
 {
     if (!WindowSystem::init()) 
     {
@@ -27,8 +27,6 @@ bool App::start()
         return false;
     }
 
-    WindowSystem::set_cursor_enabled(false);
-
     if (!gladLoadGLLoader((GLADloadproc)WindowSystem::get_proc_address)) 
     {
         std::cerr << "Failed to initialize GLAD\n";
@@ -36,18 +34,20 @@ bool App::start()
         return false;
     }
 
-    m_camera.set_position(0.0f, 0.0f, 5.0f);
-    m_camera.set_yaw(-90.0f);
-    m_camera.set_pitch(0.0f);
+    if (!m_camera.init())
+    {
+        return false;
+    }
 
-    m_camera.set_perspective(
-        glm_rad(60.0f),
-        WindowSystem::get_aspect_ratio(),
-        0.1f,
-        1000.0f
-    );
+    if (!m_renderer.init())
+    {
+        return false;
+    }
 
-    m_renderer.start();
+    if (!m_world.init())
+    {
+        return false;
+    }
 
     return true;
 }
@@ -73,7 +73,7 @@ void App::exit()
     WindowSystem::destroy();
 }
 
-void App::update(const double dt) 
+void App::update(double dt) 
 {
     if (InputSystem::is_key_pressed(GLFW_KEY_ESCAPE) == GL_TRUE)
     {
@@ -81,6 +81,7 @@ void App::update(const double dt)
     }
 
     m_camera.update(dt);
+    m_renderer.update(&m_world);
 }
 
 void App::render()
