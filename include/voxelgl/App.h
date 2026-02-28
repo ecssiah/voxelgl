@@ -20,6 +20,8 @@ struct App
 
     void update(double dt);
     void render();
+
+    void setup_demo_world();
 };
 
 } // namespace voxelgl

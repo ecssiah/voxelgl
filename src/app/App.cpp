@@ -1,6 +1,5 @@
 #include "voxelgl/app.h"
 #include "app/world/cell.h"
-#include "app/world/grid.h"
 #include "platform/input_system.h"
 #include "platform/window_system.h"
 #include "render/renderer.h"
@@ -47,20 +46,27 @@ bool App::init()
     {
         return false;
     }
-    
-    m_world.set_block_kind(ivec3{1, 0, 0}, BLOCK_KIND_EAGLE);
-    m_world.set_block_kind(ivec3{-1, 0, 0}, BLOCK_KIND_LION);
-    m_world.set_block_kind(ivec3{0, 1, 0}, BLOCK_KIND_WOLF);
-    m_world.set_block_kind(ivec3{0, -1, 0}, BLOCK_KIND_HORSE);
+
+    setup_demo_world();
+
+    return true;
+}
+
+void App::setup_demo_world()
+{
+    const int OFFSET = 8;
+    const int RADIUS = 1;
+
+    m_world.set_block_kind(ivec3{+1, +0, +0}, BLOCK_KIND_EAGLE);
+    m_world.set_block_kind(ivec3{-1, +0, +0}, BLOCK_KIND_LION);
+    m_world.set_block_kind(ivec3{+0, +1, +0}, BLOCK_KIND_WOLF);
+    m_world.set_block_kind(ivec3{+0, -1, +0}, BLOCK_KIND_HORSE);
 
     m_world.set_block_kind_wireframe(
         ivec3{-4, -4, -4}, 
-        ivec3{4, 4, 4}, 
+        ivec3{+4, +4, +4}, 
         BLOCK_KIND_STONE
     );
-
-    int OFFSET = 8;
-    int RADIUS = 1;
 
     m_world.set_block_kind_cube(
         ivec3{+OFFSET - RADIUS, -RADIUS, -RADIUS}, 
@@ -85,8 +91,6 @@ bool App::init()
         ivec3{+RADIUS, +RADIUS, -OFFSET + RADIUS}, 
         BLOCK_KIND_WOLF
     );
-
-    return true;
 }
 
 void App::run() 
