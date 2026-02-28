@@ -52,10 +52,10 @@ void World::set_block_kind(ivec3 grid_position, BlockKind block_kind)
 
     update_cell_face_mask(grid_position, cell);
 
-    for (int cell_face = 0; cell_face < CELL_FACE_COUNT; ++cell_face)
+    for (int cell_face_index = 0; cell_face_index < CELL_FACE_COUNT; ++cell_face_index)
     {
         ivec3 neighbor_grid_position;
-        glm_ivec3_add(grid_position, CELL_FACE_OFFSET_ARRAY[cell_face], neighbor_grid_position);
+        glm_ivec3_add(grid_position, CELL_FACE_OFFSET_ARRAY[cell_face_index], neighbor_grid_position);
 
         Cell* neighbor_cell = get_cell(neighbor_grid_position);
 
@@ -122,7 +122,7 @@ void World::set_block_kind_cube(ivec3 grid_position_min, ivec3 grid_position_max
                 grid_position[0] = x;
                 grid_position[1] = y;
                 grid_position[2] = z;
-                
+
                 set_block_kind(grid_position, block_kind);
             }
         }
@@ -138,16 +138,16 @@ void World::update_cell_face_mask(ivec3 grid_position, Cell* cell)
         return;
     }
 
-    for (int cell_face = 0; cell_face < CELL_FACE_COUNT; ++cell_face)
+    for (int cell_face_index = 0; cell_face_index < CELL_FACE_COUNT; ++cell_face_index)
     {
         ivec3 neighbor_grid_position;
-        glm_ivec3_add(grid_position, CELL_FACE_OFFSET_ARRAY[cell_face], neighbor_grid_position);
+        glm_ivec3_add(grid_position, CELL_FACE_OFFSET_ARRAY[cell_face_index], neighbor_grid_position);
 
         Cell* neighbor_cell = get_cell(neighbor_grid_position);
 
         if (neighbor_cell == NULL || neighbor_cell->m_block_kind == BLOCK_KIND_NONE)
         {
-            cell->m_cell_face_mask |= static_cast<uint8_t>(1u << cell_face);
+            cell->m_cell_face_mask |= CELL_FACE_BIT(cell_face_index);
         }
     }
 }
