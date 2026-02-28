@@ -112,7 +112,21 @@ void World::set_block_kind_wireframe(ivec3 grid_position_min, ivec3 grid_positio
 
 void World::set_block_kind_cube(ivec3 grid_position_min, ivec3 grid_position_max, BlockKind block_kind)
 {
-
+    for (int z = grid_position_min[2]; z <= grid_position_max[2]; ++z)
+    {
+        for (int y = grid_position_min[1]; y <= grid_position_max[1]; ++y)
+        {
+            for (int x = grid_position_min[0]; x <= grid_position_max[0]; ++x)
+            {
+                ivec3 grid_position;
+                grid_position[0] = x;
+                grid_position[1] = y;
+                grid_position[2] = z;
+                
+                set_block_kind(grid_position, block_kind);
+            }
+        }
+    }
 }
 
 void World::update_cell_face_mask(ivec3 grid_position, Cell* cell)

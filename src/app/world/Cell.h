@@ -28,6 +28,7 @@ static ivec3 CELL_FACE_OFFSET_ARRAY[CELL_FACE_COUNT] = {
 enum BlockKind
 {
     BLOCK_KIND_NONE,
+    BLOCK_KIND_STONE,
     BLOCK_KIND_EAGLE,
     BLOCK_KIND_LION,
     BLOCK_KIND_WOLF,
@@ -38,6 +39,7 @@ enum BlockKind
 static const char* BLOCK_KIND_NAME_ARRAY[BLOCK_KIND_COUNT] =
 {
     "None",
+    "Stone",
     "Eagle",
     "Lion",
     "Wolf",

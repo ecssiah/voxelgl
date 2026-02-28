@@ -7,6 +7,9 @@ static const char* BLOCK_KIND_TEXTURE_FILENAME[BLOCK_KIND_COUNT] =
     // BLOCK_KIND_NONE
     NULL,
 
+    // BLOCK_KIND_STONE
+    "stone.png",
+
     // BLOCK_KIND_EAGLE
     "eagle.png",
 
