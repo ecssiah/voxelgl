@@ -1,14 +1,16 @@
 #include "render/renderer.h"
-#include "app/world/cell.h"
-#include "render/block_render_data.h"
-#include "render/sector_mesh.h"
-#include "app/world/grid.h"
-#include "utils/shader_utils.h"
-#include "utils/stb_utils.h"
+
 #include <assert.h>
 #include <cassert>
 #include <cstdio>
 #include <string>
+#include <stb_image.h>
+
+#include "app/world/cell.h"
+#include "app/world/grid.h"
+#include "render/block_render_data.h"
+#include "render/sector_mesh.h"
+#include "utils/shader_utils.h"
 
 bool Renderer::init() 
 {
@@ -190,11 +192,13 @@ void Renderer::build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh)
             continue;
         }
 
-        ivec3 cell_grid_position;
-        indices_to_grid_position(sector->m_sector_index, cell_index, cell_grid_position);
+        CellCoordinate cell_coordinate;
+        cell_index_to_cell_coordinate(cell_index, cell_coordinate);
 
-        vec3 cell_world_position;
-        grid_position_to_world_position(cell_grid_position, cell_world_position);
+        vec3 cell_sector_position;
+        cell_sector_position[0] = (float)cell_coordinate[0];
+        cell_sector_position[1] = (float)cell_coordinate[1];
+        cell_sector_position[2] = (float)cell_coordinate[2];
 
         for (int cell_face = 0; cell_face < CELL_FACE_COUNT; ++cell_face)
         {
@@ -202,7 +206,7 @@ void Renderer::build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh)
             {
                 emit_face(
                     out_sector_mesh, 
-                    cell_world_position, 
+                    cell_sector_position, 
                     (CellFace)cell_face, 
                     cell->m_block_kind
                 );
@@ -213,7 +217,7 @@ void Renderer::build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh)
     out_sector_mesh->m_version = sector->m_version;
 }
 
-void Renderer::emit_face(SectorMesh* sector_mesh, vec3 world_position, CellFace cell_face, BlockKind block_kind)
+void Renderer::emit_face(SectorMesh* sector_mesh, vec3 sector_position, CellFace cell_face, BlockKind block_kind)
 {
     uint32_t base_index = sector_mesh->m_vertex_vec.size();
 
@@ -222,7 +226,7 @@ void Renderer::emit_face(SectorMesh* sector_mesh, vec3 world_position, CellFace 
         VertexData vertex_data = {};
 
         glm_vec3_add(
-            world_position,
+            sector_position,
             FACE_VERTEX_ARRAY[cell_face][vertex_index],
             vertex_data.m_position
         );

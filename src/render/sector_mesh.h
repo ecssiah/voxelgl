@@ -100,18 +100,18 @@ static vec2 FACE_UV_ARRAY[FACES_PER_VOXEL][VERTICES_PER_FACE] =
 
     // +Y  (Z vertical, X horizontal)
     {
-        {1, 0},
         {1, 1},
         {0, 1},
         {0, 0},
+        {1, 0},
     },
 
     // -Y  (Z vertical, X horizontal)
     {
-        {0, 0},
         {1, 0},
         {1, 1},
         {0, 1},
+        {0, 0},
     },
 
     // +Z (top face)

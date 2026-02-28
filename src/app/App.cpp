@@ -52,6 +52,12 @@ bool App::init()
     m_world.set_block_kind(ivec3{1, 0, 0}, BLOCK_KIND_WOLF);
     m_world.set_block_kind(ivec3{-1, 0, 0}, BLOCK_KIND_EAGLE);
 
+    m_world.set_block_kind_wireframe(
+        ivec3{-4, -4, -4}, 
+        ivec3{4, 4, 4}, 
+        BLOCK_KIND_LION
+    );
+
     return true;
 }
 

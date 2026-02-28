@@ -18,7 +18,7 @@ struct Camera
     float m_pitch = 0.0f;
     float m_pitch_limit = GLM_PI / 2.0f - 0.01f;
 
-    float m_speed = 2.4f;
+    float m_speed = 4.2f;
     float m_sensitivity = 0.4f;
 
     bool init();

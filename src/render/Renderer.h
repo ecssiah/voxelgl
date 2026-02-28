@@ -32,6 +32,6 @@ struct Renderer
 
     void build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh);
     void upload_mesh(SectorMesh* sector_mesh, GpuMesh* gpu_mesh);
-    void emit_face(SectorMesh* sector_mesh, vec3 world_position, CellFace cell_face, BlockKind cell_block_kind);
+    void emit_face(SectorMesh* sector_mesh, vec3 sector_position, CellFace cell_face, BlockKind cell_block_kind);
 
 };
