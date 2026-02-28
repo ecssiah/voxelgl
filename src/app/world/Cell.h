@@ -3,7 +3,7 @@
 #include "app/world/grid.h"
 #include <cglm/cglm.h>
 
-enum CellFace 
+enum CellFace
 {
     CELL_FACE_POS_X,
     CELL_FACE_NEG_X,
@@ -49,9 +49,10 @@ static const char* BLOCK_KIND_NAME_ARRAY[BLOCK_KIND_COUNT] =
 struct Cell
 {
     CellIndex m_cell_index;
+    SectorIndex m_sector_index;
     
     BlockKind m_block_kind;
     uint8_t m_cell_face_mask;
 
-    void init(CellIndex cell_index);
+    void init(CellIndex cell_index, SectorIndex sector_index);
 };

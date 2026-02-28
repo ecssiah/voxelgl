@@ -17,23 +17,23 @@ inline void vec3_normalize_safe(vec3 out_vector)
     }
 }
 
-inline void vec3_print(const char* name, vec3 vector)
+inline void vec3_print(const char* name, vec3 vec)
 {
-    printf("%s:\n(%f %f %f)\n\n", name, vector[0], vector[1], vector[2]);
+    printf("%s:\n(%f %f %f)\n\n", name, vec[0], vec[1], vec[2]);
 }
 
-inline void ivec3_print(const char* name, ivec3 vector)
+inline void ivec3_print(const char* name, ivec3 ivec)
 {
-    printf("%s:\n(%d %d %d)\n\n", name, vector[0], vector[1], vector[2]);
+    printf("%s:\n(%d %d %d)\n\n", name, ivec[0], ivec[1], ivec[2]);
 }
 
-inline void mat4_print(const char* name, mat4 matrix)
+inline void mat4_print(const char* name, mat4 mat)
 {
     printf("%s:\n", name);
 
     for (int row = 0; row < 4; ++row)
     {
-        printf("%f %f %f %f\n", matrix[0][row], matrix[1][row], matrix[2][row], matrix[3][row]);
+        printf("%f %f %f %f\n", mat[0][row], mat[1][row], mat[2][row], mat[3][row]);
     }
 
     printf("\n");

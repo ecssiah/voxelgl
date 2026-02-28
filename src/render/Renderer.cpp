@@ -14,27 +14,27 @@
 
 bool Renderer::init() 
 {
-    const std::string vert_src = 
+    const std::string vert_shader_src = 
         shader_utils::load_text_file("assets/shaders/voxel.vert");
 
-    const std::string frag_src = 
+    const std::string frag_shader_src = 
         shader_utils::load_text_file("assets/shaders/voxel.frag");
 
-    if (vert_src.empty() || frag_src.empty()) 
+    if (vert_shader_src.empty() || frag_shader_src.empty()) 
     {
         return false;
     }
 
-    const GLuint shader_vert = 
-        shader_utils::compile_shader(GL_VERTEX_SHADER,vert_src.c_str());
+    const GLuint vert_shader_id = 
+        shader_utils::compile_shader(GL_VERTEX_SHADER, vert_shader_src.c_str());
 
-    const GLuint shader_frag =
-        shader_utils::compile_shader(GL_FRAGMENT_SHADER,frag_src.c_str());
+    const GLuint frag_shader_id =
+        shader_utils::compile_shader(GL_FRAGMENT_SHADER, frag_shader_src.c_str());
 
     m_program_id = glCreateProgram();
 
-    glAttachShader(m_program_id, shader_vert);
-    glAttachShader(m_program_id, shader_frag);
+    glAttachShader(m_program_id, vert_shader_id);
+    glAttachShader(m_program_id, frag_shader_id);
 
     glLinkProgram(m_program_id);
 
@@ -62,8 +62,8 @@ bool Renderer::init()
 
     load_texture_array("assets/textures");
 
-    glDeleteShader(shader_vert);
-    glDeleteShader(shader_frag);
+    glDeleteShader(vert_shader_id);
+    glDeleteShader(frag_shader_id);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -129,7 +129,8 @@ void Renderer::load_texture_array(const char* directory)
         glTexSubImage3D(
             GL_TEXTURE_2D_ARRAY,
             0,
-            0, 0,
+            0, 
+            0,
             block_kind,
             width,
             height,
@@ -167,11 +168,11 @@ void Renderer::build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh)
     SectorCoordinate sector_coordinate;
     sector_index_to_sector_coordinate(sector->m_sector_index, sector_coordinate);
 
-    ivec3 sector_grid_position;
-    sector_coordinate_to_grid_position(sector_coordinate, sector_grid_position);
+    GridCoordinate sector_grid_coordinate;
+    sector_coordinate_to_grid_coordinate(sector_coordinate, sector_grid_coordinate);
 
     vec3 sector_world_position;
-    grid_position_to_world_position(sector_grid_position, sector_world_position);
+    grid_coordinate_to_world_position(sector_grid_coordinate, sector_world_position);
 
     glm_vec3_copy(sector_world_position, out_sector_mesh->m_sector_world_position);
 
@@ -232,7 +233,7 @@ void Renderer::emit_face(SectorMesh* sector_mesh, vec3 sector_position, CellFace
         );
 
         glm_vec3_copy(FACE_NORMAL_ARRAY[cell_face], vertex_data.m_normal);
-        
+
         glm_vec2_copy(FACE_UV_ARRAY[cell_face][vertex_index], vertex_data.m_uv);
 
         vertex_data.m_texture_index = (uint8_t)block_kind;

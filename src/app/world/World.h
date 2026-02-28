@@ -8,11 +8,12 @@ struct World
 
     bool init();
 
-    Cell* get_cell(ivec3 grid_position);
+    Cell* get_cell(GridCoordinate grid_coordinate);
     
-    void set_block_kind(ivec3 grid_position, BlockKind block_kind);
-    void set_block_kind_cube(ivec3 grid_position_min, ivec3 grid_position_max, BlockKind block_kind);
-    void set_block_kind_wireframe(ivec3 grid_position_min, ivec3 grid_position_max, BlockKind block_kind);
+    void set_block_kind(GridCoordinate grid_coordinate, BlockKind block_kind);
+    void set_block_kind_cube(GridCoordinate grid_coordinate_min, GridCoordinate grid_coordinate_max, BlockKind block_kind);
+    void set_block_kind_wireframe(GridCoordinate grid_coordinate_min, GridCoordinate grid_coordinate_max, BlockKind block_kind);
 
-    void update_cell_face_mask(ivec3 grid_position, Cell* cell);
+    void update_face_exposure(Cell* cell, GridCoordinate grid_coordinate);
+    void update_cell_face_mask(Cell* cell, GridCoordinate grid_coordinate);
 };
