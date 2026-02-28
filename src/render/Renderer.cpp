@@ -1,10 +1,13 @@
 #include "render/renderer.h"
+#include "app/world/cell.h"
+#include "render/block_render_data.h"
 #include "render/sector_mesh.h"
 #include "app/world/grid.h"
 #include "utils/shader_utils.h"
 #include "utils/stb_utils.h"
+#include <assert.h>
+#include <cassert>
 #include <cstdio>
-#include <iostream>
 #include <string>
 
 bool Renderer::init() 
@@ -28,15 +31,6 @@ bool Renderer::init()
 
     m_program_id = glCreateProgram();
 
-    m_mvp_uniform_location = glGetUniformLocation(m_program_id, "u_mvp_matrix");
-    m_texture_sampler_location = glGetUniformLocation(m_program_id, "u_texture_sampler");
-
-    if (m_texture_sampler_location != -1) 
-    {
-        glUseProgram(m_program_id);
-        glUniform1i(m_texture_sampler_location, 0);
-    }
-
     glAttachShader(m_program_id, shader_vert);
     glAttachShader(m_program_id, shader_frag);
 
@@ -53,21 +47,98 @@ bool Renderer::init()
         fprintf(stderr, "[PROGRAM LINK ERROR]\n%s\n", log);
     }
 
+    stbi_set_flip_vertically_on_load(true);
+
+    m_mvp_uniform_location = glGetUniformLocation(m_program_id, "u_mvp_matrix");
+    m_texture_sampler_location = glGetUniformLocation(m_program_id, "u_texture_sampler");
+
+    if (m_texture_sampler_location != -1) 
+    {
+        glUseProgram(m_program_id);
+        glUniform1i(m_texture_sampler_location, 0);
+    }
+
+    load_texture_array("assets/textures");
+
     glDeleteShader(shader_vert);
     glDeleteShader(shader_frag);
-
-    m_texture_id = stb_utils::load_texture_2d("assets/textures/lion.png");
-
-    if (m_texture_id == 0) 
-    {
-        std::cerr << "Texture failed to load\n";
-
-        return false;
-    }
 
     glEnable(GL_DEPTH_TEST);
 
     return true;
+}
+
+void Renderer::load_texture_array(const char* directory)
+{
+    glGenTextures(1, &m_texture_array_id);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_texture_array_id);
+    
+    glTexImage3D(
+        GL_TEXTURE_2D_ARRAY,
+        0,
+        GL_RGBA8,
+        BLOCK_TEXTURE_SIZE,
+        BLOCK_TEXTURE_SIZE,
+        BLOCK_KIND_COUNT,
+        0,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        nullptr
+    );
+
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    for (int block_kind = 0; block_kind < BLOCK_KIND_COUNT; ++block_kind)
+    {
+        const char* filename = BLOCK_KIND_TEXTURE_FILENAME[block_kind];
+
+        if (!filename) 
+        {
+            continue;
+        }
+
+        int width, height, channels;
+
+        char full_path[512];
+
+        snprintf(
+            full_path,
+            sizeof(full_path),
+            "%s/%s",
+            directory,
+            filename
+        );
+
+        stbi_uc* pixel_data = 
+            stbi_load(
+                full_path,
+                &width,
+                &height,
+                &channels,
+                4
+            );
+
+        assert(width == BLOCK_TEXTURE_SIZE && height == BLOCK_TEXTURE_SIZE);
+        assert(pixel_data != NULL);
+
+        glTexSubImage3D(
+            GL_TEXTURE_2D_ARRAY,
+            0,
+            0, 0,
+            block_kind,
+            width,
+            height,
+            1,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            pixel_data
+        );
+
+        stbi_image_free(pixel_data);
+    }
 }
 
 void Renderer::update(World* world)
@@ -127,33 +198,42 @@ void Renderer::build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh)
 
         for (int cell_face = 0; cell_face < CELL_FACE_COUNT; ++cell_face)
         {
-            if (!(cell->m_cell_face_mask & (1u << cell_face)))
+            if (cell->m_cell_face_mask & CELL_FACE_BIT(cell_face))
             {
-                continue;
+                emit_face(
+                    out_sector_mesh, 
+                    cell_world_position, 
+                    (CellFace)cell_face, 
+                    cell->m_block_kind
+                );
             }
-
-            emit_face(out_sector_mesh, cell_world_position, cell_face);
         }
     }
 
     out_sector_mesh->m_version = sector->m_version;
 }
 
-void Renderer::emit_face(SectorMesh* sector_mesh, vec3 face_world_position, int cell_face)
+void Renderer::emit_face(SectorMesh* sector_mesh, vec3 world_position, CellFace cell_face, BlockKind block_kind)
 {
     uint32_t base_index = sector_mesh->m_vertex_vec.size();
 
-    for (int vertex_index = 0; vertex_index < 4; ++vertex_index)
+    for (int vertex_index = 0; vertex_index < VERTICES_PER_FACE; ++vertex_index)
     {
-        VertexData v = {};
+        VertexData vertex_data = {};
 
         glm_vec3_add(
-            face_world_position,
+            world_position,
             FACE_VERTEX_ARRAY[cell_face][vertex_index],
-            v.m_position
+            vertex_data.m_position
         );
 
-        sector_mesh->m_vertex_vec.push_back(v);
+        glm_vec3_copy(FACE_NORMAL_ARRAY[cell_face], vertex_data.m_normal);
+        
+        glm_vec2_copy(FACE_UV_ARRAY[cell_face][vertex_index], vertex_data.m_uv);
+
+        vertex_data.m_texture_index = (uint8_t)block_kind;
+
+        sector_mesh->m_vertex_vec.push_back(vertex_data);
     }
 
     sector_mesh->m_index_vec.push_back(base_index + 0);
@@ -209,7 +289,37 @@ void Renderer::upload_mesh(SectorMesh* sector_mesh, GpuMesh* out_gpu_mesh)
         (void*)offsetof(VertexData, m_position)
     );
 
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VertexData),
+        (void*)offsetof(VertexData, m_normal)
+    );
+
+    glVertexAttribPointer(
+        2,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VertexData),
+        (void*)offsetof(VertexData, m_uv)
+    );
+
+    glVertexAttribPointer(
+        3,
+        1,
+        GL_UNSIGNED_BYTE,
+        GL_FALSE,
+        sizeof(VertexData),
+        (void*)offsetof(VertexData, m_texture_index)
+    );
+
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
 
     glBindVertexArray(0);
 
@@ -217,6 +327,7 @@ void Renderer::upload_mesh(SectorMesh* sector_mesh, GpuMesh* out_gpu_mesh)
     glm_translate(out_gpu_mesh->m_model_matrix, sector_mesh->m_sector_world_position);
 
     out_gpu_mesh->m_index_count = sector_mesh->m_index_vec.size();
+
     out_gpu_mesh->m_version = sector_mesh->m_version;
 }
 
@@ -230,7 +341,7 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
     glUseProgram(m_program_id);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_texture_id);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_texture_array_id);
 
     for (SectorIndex sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; sector_index++)
     {
@@ -238,16 +349,6 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
 
         if (gpu_mesh->m_vao_id != 0)
         {
-            mat4 model_view_projection_matrix;
-            glm_mat4_mul(m_view_projection_matrix, gpu_mesh->m_model_matrix, model_view_projection_matrix);
-
-            glUniformMatrix4fv(
-                m_mvp_uniform_location,
-                1,
-                GL_FALSE,
-                (float*)model_view_projection_matrix
-            );
-
             draw_mesh(gpu_mesh);
         }
     }
@@ -255,6 +356,16 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
 
 void Renderer::draw_mesh(GpuMesh* gpu_mesh)
 {
+    mat4 model_view_projection_matrix;
+    glm_mat4_mul(m_view_projection_matrix, gpu_mesh->m_model_matrix, model_view_projection_matrix);
+
+    glUniformMatrix4fv(
+        m_mvp_uniform_location,
+        1,
+        GL_FALSE,
+        (float*)model_view_projection_matrix
+    );
+
     glBindVertexArray(gpu_mesh->m_vao_id);
 
     glDrawElements(

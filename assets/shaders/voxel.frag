@@ -2,20 +2,15 @@
 
 in vec3 v_normal;
 in vec2 v_uv;
+flat in uint v_texture_index;
 
-uniform sampler2D u_texture_sampler;
+uniform sampler2DArray u_texture_sampler;
 
 out vec4 FragColor;
 
 void main()
 {
-    vec3 normal_color = normalize(v_normal) * 0.5 + 0.5;
-    vec3 texture_color = texture(u_texture_sampler, v_uv).rgb;
+    vec4 texture_color = texture(u_texture_sampler, vec3(v_uv, float(v_texture_index)));
 
-    // vec3 final_color = texture_color;
-    // vec3 final_color = normal_color;
-    // vec3 final_color = texture_color * normal_color;
-    vec3 final_color = mix(texture_color, texture_color * normal_color, 0.7);
-
-    FragColor = vec4(final_color, 1.0);
+    FragColor = texture_color;
 }

@@ -14,7 +14,7 @@ struct Renderer
     GpuMesh m_gpu_mesh_cache[WORLD_VOLUME_IN_SECTORS];
 
     GLuint m_program_id = 0;
-    GLuint m_texture_id = 0;
+    GLuint m_texture_array_id = 0;
 
     GLuint m_mvp_uniform_location = 0;
     GLuint m_texture_sampler_location = 0;
@@ -28,8 +28,10 @@ struct Renderer
 
     void draw_mesh(GpuMesh* gpu_mesh);
 
+    void load_texture_array(const char* directory);
+
     void build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh);
     void upload_mesh(SectorMesh* sector_mesh, GpuMesh* gpu_mesh);
-    void emit_face(SectorMesh* sector_mesh, vec3 face_world_position, int cell_face);
+    void emit_face(SectorMesh* sector_mesh, vec3 world_position, CellFace cell_face, BlockKind cell_block_kind);
 
 };

@@ -110,6 +110,7 @@ void Camera::get_right(vec3 out_right)
     glm_vec3_copy(GLM_YUP, up);
 
     glm_vec3_cross(forward, up, out_right);
+    
     cglm_utils::vec3_normalize_safe(out_right);
 }
 
@@ -137,43 +138,60 @@ void Camera::set_pitch(float pitch)
 void Camera::update(double dt)
 {
     vec3 input_value = GLM_VEC3_ZERO_INIT;
-
-    if (InputSystem::is_key_down(GLFW_KEY_W))
+    
+    if (InputSystem::is_key_down(GLFW_KEY_D))
     {
-        input_value[2] += 1.0f;
+        input_value[0] += 1.0f;
     }
-
-    if (InputSystem::is_key_down(GLFW_KEY_S))
-    {
-        input_value[2] -= 1.0f;
-    }
-
+    
     if (InputSystem::is_key_down(GLFW_KEY_A))
     {
         input_value[0] -= 1.0f;
     }
 
-    if (InputSystem::is_key_down(GLFW_KEY_D))
+    if (InputSystem::is_key_down(GLFW_KEY_E))
     {
-        input_value[0] += 1.0f;
+        input_value[1] += 1.0f;
+    }
+
+    if (InputSystem::is_key_down(GLFW_KEY_Q))
+    {
+        input_value[1] -= 1.0f;
+    }
+    
+    if (InputSystem::is_key_down(GLFW_KEY_W))
+    {
+        input_value[2] += 1.0f;
+    }
+    
+    if (InputSystem::is_key_down(GLFW_KEY_S))
+    {
+        input_value[2] -= 1.0f;
     }
 
     cglm_utils::vec3_normalize_safe(input_value);
 
     vec3 right, forward;
-    get_forward(forward);
     get_right(right);
+    get_forward(forward);
 
-    vec3 flat_forward;
-    glm_vec3_copy(forward, flat_forward);
-    flat_forward[1] = 0.0f;
+    vec3 unit_y = GLM_VEC3_ZERO_INIT;
+    unit_y[1] = 1.0f;
 
-    cglm_utils::vec3_normalize_safe(flat_forward);
+    vec3 forward_xy;
+    glm_vec3_copy(forward, forward_xy);
+    forward_xy[1] = 0.0f;
 
-    vec3 delta_position;
-    glm_vec3_scale(flat_forward, input_value[2], flat_forward);
+    cglm_utils::vec3_normalize_safe(forward_xy);
+
     glm_vec3_scale(right, input_value[0], right);
-    glm_vec3_add(flat_forward, right, delta_position);
+    glm_vec3_scale(unit_y, input_value[1], unit_y);
+    glm_vec3_scale(forward_xy, input_value[2], forward_xy);
+    
+    vec3 delta_position = GLM_VEC3_ZERO_INIT;
+    glm_vec3_add(delta_position, right, delta_position);
+    glm_vec3_add(delta_position, forward_xy, delta_position);
+    glm_vec3_add(delta_position, unit_y, delta_position);
 
     cglm_utils::vec3_normalize_safe(delta_position);
 

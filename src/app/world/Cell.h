@@ -35,7 +35,7 @@ enum BlockKind
     BLOCK_KIND_COUNT,
 };
 
-static const char* BlockKindNameArray[BLOCK_KIND_COUNT] =
+static const char* BLOCK_KIND_NAME_ARRAY[BLOCK_KIND_COUNT] =
 {
     "None",
     "Eagle",

@@ -47,10 +47,10 @@ bool App::init()
         return false;
     }
     
-    m_world.set_block_kind(ivec3{0, 0, 0}, BLOCK_KIND_EAGLE);
-    m_world.set_block_kind(ivec3{0, 1, 0}, BLOCK_KIND_EAGLE);
-    m_world.set_block_kind(ivec3{0, -1, 0}, BLOCK_KIND_EAGLE);
-    m_world.set_block_kind(ivec3{1, 0, 0}, BLOCK_KIND_EAGLE);
+    m_world.set_block_kind(ivec3{0, 1, 0}, BLOCK_KIND_HORSE);
+    m_world.set_block_kind(ivec3{0, -1, 0}, BLOCK_KIND_LION);
+    m_world.set_block_kind(ivec3{1, 0, 0}, BLOCK_KIND_WOLF);
+    m_world.set_block_kind(ivec3{-1, 0, 0}, BLOCK_KIND_EAGLE);
 
     return true;
 }
