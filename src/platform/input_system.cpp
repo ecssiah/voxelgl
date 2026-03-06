@@ -1,5 +1,7 @@
 #include "platform/input_system.h"
 
+std::deque<InputAction> InputSystem::input_action_deque = {};
+
 std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_current_key_array = {};
 std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_previous_key_array = {};
 
@@ -58,6 +60,26 @@ bool InputSystem::is_key_down(int key)
 bool InputSystem::is_key_pressed(int key)
 {
     return s_current_key_array[key] && !s_previous_key_array[key];
+}
+
+bool InputSystem::is_key_released(int key)
+{
+    return !s_current_key_array[key] && s_previous_key_array[key];
+}
+
+bool InputSystem::is_mouse_button_down(int button)
+{
+    return s_current_mouse_array[button];
+}
+
+bool InputSystem::is_mouse_button_pressed(int button)
+{
+    return s_current_mouse_array[button] && !s_previous_mouse_array[button];
+}
+
+bool InputSystem::is_mouse_button_released(int button)
+{
+    return !s_current_mouse_array[button] && s_previous_mouse_array[button];
 }
 
 double InputSystem::get_mouse_x()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "app/action/input_action.h"
 #include "sector.h"
 
 struct World
@@ -7,6 +8,9 @@ struct World
     Sector m_sector_array[WORLD_VOLUME_IN_SECTORS];
 
     bool init();
+    void update(float dt);
+
+    Cell* line_trace(vec3 origin, vec3 direction);
 
     Cell* get_cell(GridCoordinate grid_coordinate);
     

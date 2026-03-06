@@ -121,6 +121,8 @@ void App::update(double dt)
         WindowSystem::request_close();
     }
 
+    m_world.update(dt);
+
     m_camera.update(dt);
     m_renderer.update(&m_world);
 }

@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "app/world/world.h"
 #include "platform/input_system.h"
 #include "platform/window_system.h"
 #include "utils/cglm_utils.h"
@@ -62,17 +63,17 @@ void Camera::rebuild_projection_matrix()
 
 void Camera::get_view_matrix(mat4 out_view_matrix) 
 {
-    std::memcpy(out_view_matrix, m_view_matrix, sizeof(mat4));
+    glm_mat4_copy(m_view_matrix, out_view_matrix);
 }
 
 void Camera::get_projection_matrix(mat4 out_projection_matrix) 
 {
-    std::memcpy(out_projection_matrix, m_projection_matrix, sizeof(mat4));
+    glm_mat4_copy(m_projection_matrix, out_projection_matrix);
 }
 
 void Camera::get_position(vec3 out_position) 
 {
-    std::memcpy(out_position, m_position, sizeof(vec3));
+    glm_vec3_copy(m_position, out_position);
 }
 
 void Camera::set_position(float x, float y, float z)
@@ -167,6 +168,44 @@ void Camera::update(double dt)
     if (InputSystem::is_key_down(GLFW_KEY_S))
     {
         input_value[2] -= 1.0f;
+    }
+
+    if (InputSystem::is_mouse_button_released(GLFW_MOUSE_BUTTON_LEFT))
+    {
+        vec3 origin;
+        glm_vec3_copy(m_position, origin);
+
+        vec3 direction;
+        get_forward(direction);
+
+        InputAction input_action =
+        {
+            .input_action_type = INPUT_ACTION_PLACE
+        };
+
+        glm_vec3_copy(origin, input_action.place.origin);
+        glm_vec3_copy(direction, input_action.place.direction);
+
+        InputSystem::input_action_deque.push_back(input_action);
+    }
+
+    if (InputSystem::is_mouse_button_released(GLFW_MOUSE_BUTTON_RIGHT))
+    {
+        vec3 origin;
+        glm_vec3_copy(m_position, origin);
+
+        vec3 direction;
+        get_forward(direction);
+
+        InputAction input_action =
+        {
+            .input_action_type = INPUT_ACTION_REMOVE
+        };
+
+        glm_vec3_copy(origin, input_action.place.origin);
+        glm_vec3_copy(direction, input_action.place.direction);
+
+        InputSystem::input_action_deque.push_back(input_action);
     }
 
     cglm_utils::vec3_normalize_safe(input_value);
