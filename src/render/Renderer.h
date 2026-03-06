@@ -19,7 +19,7 @@ struct Renderer
     GLuint m_mvp_uniform_location = 0;
     GLuint m_texture_sampler_location = 0;
 
-    mat4 m_view_projection_matrix;
+    mat4 m_view_projection_matrix = GLM_MAT4_IDENTITY_INIT;
 
     bool init();
 

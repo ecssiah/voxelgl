@@ -9,10 +9,10 @@ struct Camera
     float m_near_plane = 0.1f;
     float m_far_plane = 1000.0f;
 
-    mat4 m_projection_matrix;
-    mat4 m_view_matrix;
+    mat4 m_projection_matrix = GLM_MAT4_IDENTITY_INIT;
+    mat4 m_view_matrix = GLM_MAT4_IDENTITY_INIT;
 
-    vec3 m_position;
+    vec3 m_position = GLM_VEC3_ZERO_INIT;
 
     float m_yaw = 0.0f;
     float m_pitch = 0.0f;

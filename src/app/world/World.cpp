@@ -1,6 +1,7 @@
 #include "world.h"
 #include "app/world/cell.h"
 #include "app/world/grid.h"
+
 #include <stdlib.h>
 #include <time.h>
 
@@ -12,8 +13,6 @@ bool World::init()
     {
         SectorCoordinate sector_coordinate;
         sector_index_to_sector_coordinate(sector_index, sector_coordinate);
-
-        printf("Sector: %d (%d %d %d)\n", sector_index, sector_coordinate[0], sector_coordinate[1], sector_coordinate[2]);
 
         m_sector_array[sector_index].init(sector_index);
     }

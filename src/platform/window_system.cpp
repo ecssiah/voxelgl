@@ -3,7 +3,6 @@
 
 #include <glad/glad.h>
 #include <sstream>
-#include <iostream>
 
 
 void WindowSystem::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -42,7 +41,7 @@ bool WindowSystem::create(const char* title)
 
     if (!s_window) 
     {
-        std::cerr << "Failed to create GLFW window\n";
+        printf("Failed to create GLFW window\n");
         glfwTerminate();
 
         return false;

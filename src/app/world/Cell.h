@@ -48,11 +48,11 @@ static const char* BLOCK_KIND_NAME_ARRAY[BLOCK_KIND_COUNT] =
 
 struct Cell
 {
-    CellIndex m_cell_index;
-    SectorIndex m_sector_index;
+    CellIndex m_cell_index = 0;
+    SectorIndex m_sector_index = 0;
     
-    BlockKind m_block_kind;
-    uint8_t m_cell_face_mask;
+    BlockKind m_block_kind = BlockKind::BLOCK_KIND_NONE;
+    uint8_t m_cell_face_mask = 0;
 
     void init(CellIndex cell_index, SectorIndex sector_index);
 };

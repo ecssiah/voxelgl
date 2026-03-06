@@ -7,7 +7,7 @@
 namespace voxelgl 
 {
 
-struct App 
+struct App
 {
     Camera m_camera;
     Renderer m_renderer;
