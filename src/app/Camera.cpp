@@ -202,8 +202,8 @@ void Camera::update(double dt)
             .input_action_type = INPUT_ACTION_REMOVE
         };
 
-        glm_vec3_copy(origin, input_action.place.origin);
-        glm_vec3_copy(direction, input_action.place.direction);
+        glm_vec3_copy(origin, input_action.remove.origin);
+        glm_vec3_copy(direction, input_action.remove.direction);
 
         InputSystem::input_action_queue.queue(input_action);
     }

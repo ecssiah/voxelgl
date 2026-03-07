@@ -90,6 +90,21 @@ HitResult World::line_trace(vec3 origin, vec3 direction, float distance)
 
     world_position_to_grid_coordinate(origin, grid_coordinate);
 
+    Cell* cell = get_cell(grid_coordinate);
+
+    if (!cell)
+    {
+        return hit_result;
+    }
+
+    if (cell->m_block_kind != BLOCK_KIND_NONE)
+    {
+        hit_result.hit_cell = cell;
+        return hit_result;
+    }
+
+    hit_result.previous_cell = cell;
+
     int step_x = (direction[0] > 0) ? 1 : (direction[0] < 0) ? -1 : 0;
     int step_y = (direction[1] > 0) ? 1 : (direction[1] < 0) ? -1 : 0;
     int step_z = (direction[2] > 0) ? 1 : (direction[2] < 0) ? -1 : 0;
@@ -98,9 +113,9 @@ HitResult World::line_trace(vec3 origin, vec3 direction, float distance)
     float t_delta_y = (direction[1] != 0) ? (1.0f / fabsf(direction[1])) : FLT_MAX;
     float t_delta_z = (direction[2] != 0) ? (1.0f / fabsf(direction[2])) : FLT_MAX;
 
-    float next_voxel_boundary_x = grid_coordinate[0] + (step_x > 0 ? 1.0f : 0.0f);
-    float next_voxel_boundary_y = grid_coordinate[1] + (step_y > 0 ? 1.0f : 0.0f);
-    float next_voxel_boundary_z = grid_coordinate[2] + (step_z > 0 ? 1.0f : 0.0f);
+    float next_voxel_boundary_x = grid_coordinate[0] + (step_x > 0 ? CELL_RADIUS : -CELL_RADIUS);
+    float next_voxel_boundary_y = grid_coordinate[1] + (step_y > 0 ? CELL_RADIUS : -CELL_RADIUS);
+    float next_voxel_boundary_z = grid_coordinate[2] + (step_z > 0 ? CELL_RADIUS : -CELL_RADIUS);
 
     float t_max_x = (direction[0] != 0)
         ? (next_voxel_boundary_x - origin[0]) / direction[0]
@@ -116,8 +131,12 @@ HitResult World::line_trace(vec3 origin, vec3 direction, float distance)
 
     int MAX_FRAMES = 128;
 
+    glm_vec3_print(origin, stdout);
+
     for (int i = 0; i < MAX_FRAMES; ++i)
     {
+        glm_ivec3_print(grid_coordinate, stdout);
+
         float current_t = std::min(std::min(t_max_x, t_max_y), t_max_z);
 
         if (current_t > distance)
@@ -125,21 +144,6 @@ HitResult World::line_trace(vec3 origin, vec3 direction, float distance)
             break;
         }
 
-        Cell* cell = get_cell(grid_coordinate);
-
-        if (!cell)
-        {
-            return hit_result;
-        }
-
-        if (cell->m_block_kind != BLOCK_KIND_NONE)
-        {
-            hit_result.hit_cell = cell;
-            return hit_result;
-        }
-
-        hit_result.previous_cell = cell;
-        
         if (t_max_x <= t_max_y && t_max_x <= t_max_z)
         {
             grid_coordinate[0] += step_x;
@@ -155,6 +159,21 @@ HitResult World::line_trace(vec3 origin, vec3 direction, float distance)
             grid_coordinate[2] += step_z;
             t_max_z += t_delta_z;
         }
+
+        cell = get_cell(grid_coordinate);
+
+        if (!cell)
+        {
+            return hit_result;
+        }
+
+        if (cell->m_block_kind != BLOCK_KIND_NONE)
+        {
+            hit_result.hit_cell = cell;
+            return hit_result;
+        }
+
+        hit_result.previous_cell = cell;
 
         if (!grid_coordinate_is_valid(grid_coordinate))
         {

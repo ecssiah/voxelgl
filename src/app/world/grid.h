@@ -161,8 +161,8 @@ inline void sector_coordinate_to_grid_coordinate(SectorCoordinate sector_coordin
 
 inline void cell_index_to_cell_coordinate(CellIndex cell_index, CellCoordinate out_cell_coordinate)
 {
-    int sector_size_in_cells = get_world_size_in_sectors();
-    int sector_area_in_cells = get_world_area_in_sectors();
+    int sector_size_in_cells = get_sector_size_in_cells();
+    int sector_area_in_cells = get_sector_area_in_cells();
 
     out_cell_coordinate[0] = cell_index % sector_size_in_cells;
     out_cell_coordinate[1] = (cell_index / sector_size_in_cells) % sector_size_in_cells;
@@ -235,9 +235,9 @@ inline CellIndex grid_coordinate_to_cell_index(GridCoordinate grid_coordinate)
 
 inline void world_position_to_grid_coordinate(vec3 world_position, GridCoordinate out_grid_coordinate)
 {
-    out_grid_coordinate[0] = floorf(world_position[0]);
-    out_grid_coordinate[1] = floorf(world_position[1]);
-    out_grid_coordinate[2] = floorf(world_position[2]);
+    out_grid_coordinate[0] = (int)floorf(world_position[0] + CELL_RADIUS);
+    out_grid_coordinate[1] = (int)floorf(world_position[1] + CELL_RADIUS);
+    out_grid_coordinate[2] = (int)floorf(world_position[2] + CELL_RADIUS);
 }
 
 inline void indices_to_grid_coordinate(SectorIndex sector_index, CellIndex cell_index, GridCoordinate out_grid_coordinate)
