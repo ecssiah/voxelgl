@@ -1,5 +1,4 @@
 #include "voxelgl/app.h"
-#include "app/world/cell.h"
 #include "platform/input_system.h"
 #include "platform/window_system.h"
 #include "render/renderer.h"
@@ -29,6 +28,11 @@ bool App::init()
     {
         std::cerr << "Failed to initialize GLAD\n";
 
+        return false;
+    }
+
+    if (!InputSystem::init())
+    {
         return false;
     }
 
@@ -62,9 +66,9 @@ void App::setup_demo_world()
     m_world.set_block_kind(ivec3{+0, +1, +0}, BLOCK_KIND_WOLF);
     m_world.set_block_kind(ivec3{+0, -1, +0}, BLOCK_KIND_HORSE);
 
-    m_world.set_block_kind_wireframe(
-        ivec3{-4, -4, -4}, 
-        ivec3{+4, +4, +4}, 
+    m_world.set_block_kind_cube(
+        ivec3{-8, -4, -8}, 
+        ivec3{+8, -4, +8}, 
         BLOCK_KIND_STONE
     );
 

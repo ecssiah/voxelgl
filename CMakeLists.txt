@@ -57,6 +57,7 @@ target_sources(
     src/render/stb_image_loader.cpp
     src/app/app.cpp
     src/app/camera.cpp
+    src/app/action/input_action.cpp
     src/app/world/cell.cpp
     src/app/world/sector.cpp
     src/app/world/world.cpp

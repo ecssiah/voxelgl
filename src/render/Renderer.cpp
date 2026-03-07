@@ -146,7 +146,7 @@ void Renderer::load_texture_array(const char* directory)
 
 void Renderer::update(World* world)
 {
-    for (SectorIndex sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; sector_index++)
+    for (SectorIndex sector_index = 0; sector_index < get_world_volume_in_sectors(); sector_index++)
     {
         Sector* sector = &world->m_sector_array[sector_index];
 
@@ -179,7 +179,7 @@ void Renderer::build_sector_mesh(Sector* sector, SectorMesh* out_sector_mesh)
     out_sector_mesh->m_vertex_vec.clear();
     out_sector_mesh->m_index_vec.clear();
 
-    for (CellIndex cell_index = 0; cell_index < SECTOR_VOLUME_IN_CELLS; ++cell_index)
+    for (CellIndex cell_index = 0; cell_index < get_sector_volume_in_cells(); ++cell_index)
     {
         Cell* cell = &sector->m_cell_array[cell_index];
 
@@ -348,7 +348,7 @@ void Renderer::render(mat4 view_matrix, mat4 projection_matrix)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, m_texture_array_id);
 
-    for (SectorIndex sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; sector_index++)
+    for (SectorIndex sector_index = 0; sector_index < get_world_volume_in_sectors(); sector_index++)
     {
         GpuMesh* gpu_mesh = &m_gpu_mesh_cache[sector_index];
 

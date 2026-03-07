@@ -1,6 +1,8 @@
 #include "platform/input_system.h"
 
-std::deque<InputAction> InputSystem::input_action_deque = {};
+int32_t InputSystem::MAX_ACTIONS_PER_FRAME = 100;
+
+InputActionQueue InputSystem::input_action_queue = {};
 
 std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_current_key_array = {};
 std::array<bool, GLFW_KEY_LAST + 1> InputSystem::s_previous_key_array = {};
@@ -12,6 +14,13 @@ double InputSystem::s_current_mouse_x = 0.0;
 double InputSystem::s_current_mouse_y = 0.0;
 double InputSystem::s_previous_mouse_x = 0.0;
 double InputSystem::s_previous_mouse_y = 0.0;
+
+bool InputSystem::init()
+{
+    InputSystem::input_action_queue.init(MAX_ACTIONS_PER_FRAME);
+
+    return true;
+}
 
 void InputSystem::begin_frame()
 {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <deque>
 
 #include <GLFW/glfw3.h>
 
@@ -9,7 +8,9 @@
 
 struct InputSystem
 {
-    static std::deque<InputAction> input_action_deque;
+    static int32_t MAX_ACTIONS_PER_FRAME;
+
+    static InputActionQueue input_action_queue;
 
     static std::array<bool, GLFW_KEY_LAST + 1> s_current_key_array;
     static std::array<bool, GLFW_KEY_LAST + 1> s_previous_key_array;
@@ -21,6 +22,8 @@ struct InputSystem
     static double s_current_mouse_y;
     static double s_previous_mouse_x;
     static double s_previous_mouse_y;
+
+    static bool init();
 
     static void begin_frame();
 

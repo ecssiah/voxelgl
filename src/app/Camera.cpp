@@ -186,7 +186,7 @@ void Camera::update(double dt)
         glm_vec3_copy(origin, input_action.place.origin);
         glm_vec3_copy(direction, input_action.place.direction);
 
-        InputSystem::input_action_deque.push_back(input_action);
+        InputSystem::input_action_queue.queue(input_action);
     }
 
     if (InputSystem::is_mouse_button_released(GLFW_MOUSE_BUTTON_RIGHT))
@@ -205,7 +205,7 @@ void Camera::update(double dt)
         glm_vec3_copy(origin, input_action.place.origin);
         glm_vec3_copy(direction, input_action.place.direction);
 
-        InputSystem::input_action_deque.push_back(input_action);
+        InputSystem::input_action_queue.queue(input_action);
     }
 
     cglm_utils::vec3_normalize_safe(input_value);

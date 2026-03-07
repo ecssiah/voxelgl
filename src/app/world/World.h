@@ -1,16 +1,18 @@
 #pragma once
 
 #include "app/action/input_action.h"
+#include "app/world/hit_result.h"
+#include "app/world/grid.h"
 #include "sector.h"
 
 struct World
 {
-    Sector m_sector_array[WORLD_VOLUME_IN_SECTORS];
+    Sector m_sector_array[get_world_volume_in_sectors()];
 
     bool init();
     void update(float dt);
 
-    Cell* line_trace(vec3 origin, vec3 direction);
+    HitResult line_trace(vec3 origin, vec3 direction, float distance);
 
     Cell* get_cell(GridCoordinate grid_coordinate);
     

@@ -10,8 +10,8 @@
 
 struct Renderer
 {
-    SectorMesh m_sector_mesh_cache[WORLD_VOLUME_IN_SECTORS];
-    GpuMesh m_gpu_mesh_cache[WORLD_VOLUME_IN_SECTORS];
+    SectorMesh m_sector_mesh_cache[get_world_volume_in_sectors()];
+    GpuMesh m_gpu_mesh_cache[get_world_volume_in_sectors()];
 
     GLuint m_program_id = 0;
     GLuint m_texture_array_id = 0;

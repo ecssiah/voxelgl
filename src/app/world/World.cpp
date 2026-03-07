@@ -3,8 +3,10 @@
 #include "app/world/grid.h"
 #include "platform/input_system.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdio>
+#include <cfloat>
 #include <stdlib.h>
 #include <time.h>
 
@@ -14,7 +16,7 @@ bool World::init()
 {
     srand((unsigned int)time(NULL));
 
-    for (SectorIndex sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; sector_index++)
+    for (SectorIndex sector_index = 0; sector_index < get_world_volume_in_sectors(); sector_index++)
     {
         SectorCoordinate sector_coordinate;
         sector_index_to_sector_coordinate(sector_index, sector_coordinate);
@@ -27,24 +29,25 @@ bool World::init()
 
 void World::update(float dt)
 {
-    while (!InputSystem::input_action_deque.empty())
+    while (!InputSystem::input_action_queue.is_empty())
     {
-        InputAction input_action = InputSystem::input_action_deque.front();
-        InputSystem::input_action_deque.pop_front();
+        InputAction input_action = InputSystem::input_action_queue.pop();
 
         switch (input_action.input_action_type)
         {
         case INPUT_ACTION_PLACE:
         {
-            Cell* place_hit_cell = line_trace(input_action.place.origin, input_action.place.direction);
+            HitResult hit_result = line_trace(input_action.place.origin, input_action.place.direction, 8.0f);
 
-            if (place_hit_cell)
+            if (hit_result.hit_cell && hit_result.previous_cell)
             {
                 GridCoordinate grid_coordinate;
     
-                grid_coordinate[0] = (int)floorf(input_action.place.origin[0]);
-                grid_coordinate[1] = (int)floorf(input_action.place.origin[1]);
-                grid_coordinate[2] = (int)floorf(input_action.place.origin[2]);
+                indices_to_grid_coordinate(
+                    hit_result.previous_cell->m_sector_index, 
+                    hit_result.previous_cell->m_cell_index, 
+                    grid_coordinate
+                );
 
                 set_block_kind(grid_coordinate, BLOCK_KIND_WOLF);
             }
@@ -53,15 +56,17 @@ void World::update(float dt)
         }
         case INPUT_ACTION_REMOVE:
         {
-            Cell* remove_hit_cell = line_trace(input_action.remove.origin, input_action.remove.direction);
+            HitResult hit_result = line_trace(input_action.remove.origin, input_action.remove.direction, 8.0f);
             
-            if (remove_hit_cell)
+            if (hit_result.hit_cell)
             {
                 GridCoordinate grid_coordinate;
     
-                grid_coordinate[0] = (int)floorf(input_action.remove.origin[0]);
-                grid_coordinate[1] = (int)floorf(input_action.remove.origin[1]);
-                grid_coordinate[2] = (int)floorf(input_action.remove.origin[2]);
+                indices_to_grid_coordinate(
+                    hit_result.hit_cell->m_sector_index, 
+                    hit_result.hit_cell->m_cell_index, 
+                    grid_coordinate
+                );
 
                 set_block_kind(grid_coordinate, BLOCK_KIND_NONE);
             }
@@ -74,69 +79,81 @@ void World::update(float dt)
     }
 }
 
-Cell* World::line_trace(vec3 origin, vec3 direction)
+HitResult World::line_trace(vec3 origin, vec3 direction, float distance)
 {
-    glm_vec3_print(origin, stdout);
-    glm_vec3_print(direction, stdout);
+    HitResult hit_result = {
+        .hit_cell = NULL,
+        .previous_cell = NULL,
+    };
 
     GridCoordinate grid_coordinate;
 
-    grid_coordinate[0] = (int)floorf(origin[0]);
-    grid_coordinate[1] = (int)floorf(origin[1]);
-    grid_coordinate[2] = (int)floorf(origin[2]);
+    world_position_to_grid_coordinate(origin, grid_coordinate);
 
-    int stepX = (direction[0] > 0) ? 1 : -1;
-    int stepY = (direction[1] > 0) ? 1 : -1;
-    int stepZ = (direction[2] > 0) ? 1 : -1;
+    int step_x = (direction[0] > 0) ? 1 : (direction[0] < 0) ? -1 : 0;
+    int step_y = (direction[1] > 0) ? 1 : (direction[1] < 0) ? -1 : 0;
+    int step_z = (direction[2] > 0) ? 1 : (direction[2] < 0) ? -1 : 0;
 
-    float tDeltaX = fabsf(1.0f / direction[0]);
-    float tDeltaY = fabsf(1.0f / direction[1]);
-    float tDeltaZ = fabsf(1.0f / direction[2]);
+    float t_delta_x = (direction[0] != 0) ? (1.0f / fabsf(direction[0])) : FLT_MAX;
+    float t_delta_y = (direction[1] != 0) ? (1.0f / fabsf(direction[1])) : FLT_MAX;
+    float t_delta_z = (direction[2] != 0) ? (1.0f / fabsf(direction[2])) : FLT_MAX;
 
-    float nextVoxelBoundaryX = grid_coordinate[0] + (stepX > 0 ? 1.0f : 0.0f);
-    float nextVoxelBoundaryY = grid_coordinate[1] + (stepY > 0 ? 1.0f : 0.0f);
-    float nextVoxelBoundaryZ = grid_coordinate[2] + (stepZ > 0 ? 1.0f : 0.0f);
+    float next_voxel_boundary_x = grid_coordinate[0] + (step_x > 0 ? 1.0f : 0.0f);
+    float next_voxel_boundary_y = grid_coordinate[1] + (step_y > 0 ? 1.0f : 0.0f);
+    float next_voxel_boundary_z = grid_coordinate[2] + (step_z > 0 ? 1.0f : 0.0f);
 
-    float tMaxX = (nextVoxelBoundaryX - origin[0]) / direction[0];
-    float tMaxY = (nextVoxelBoundaryY - origin[1]) / direction[1];
-    float tMaxZ = (nextVoxelBoundaryZ - origin[2]) / direction[2];
+    float t_max_x = (direction[0] != 0)
+        ? (next_voxel_boundary_x - origin[0]) / direction[0]
+        : FLT_MAX;
 
-    const int MAX_STEPS = 128;
+    float t_max_y = (direction[1] != 0)
+        ? (next_voxel_boundary_y - origin[1]) / direction[1]
+        : FLT_MAX;
 
-    for (int i = 0; i < MAX_STEPS; i++)
+    float t_max_z = (direction[2] != 0)
+        ? (next_voxel_boundary_z - origin[2]) / direction[2]
+        : FLT_MAX;
+
+    int MAX_FRAMES = 128;
+
+    for (int i = 0; i < MAX_FRAMES; ++i)
     {
-        Cell* cell = get_cell(grid_coordinate);
+        float current_t = std::min(std::min(t_max_x, t_max_y), t_max_z);
 
-        if (cell && cell->m_block_kind != BLOCK_KIND_NONE)
+        if (current_t > distance)
         {
-            return cell;
+            break;
         }
 
-        if (tMaxX < tMaxY)
+        Cell* cell = get_cell(grid_coordinate);
+
+        if (!cell)
         {
-            if (tMaxX < tMaxZ)
-            {
-                grid_coordinate[0] += stepX;
-                tMaxX += tDeltaX;
-            }
-            else
-            {
-                grid_coordinate[2] += stepZ;
-                tMaxZ += tDeltaZ;
-            }
+            return hit_result;
+        }
+
+        if (cell->m_block_kind != BLOCK_KIND_NONE)
+        {
+            hit_result.hit_cell = cell;
+            return hit_result;
+        }
+
+        hit_result.previous_cell = cell;
+        
+        if (t_max_x <= t_max_y && t_max_x <= t_max_z)
+        {
+            grid_coordinate[0] += step_x;
+            t_max_x += t_delta_x;
+        }
+        else if (t_max_y <= t_max_z)
+        {
+            grid_coordinate[1] += step_y;
+            t_max_y += t_delta_y;
         }
         else
         {
-            if (tMaxY < tMaxZ)
-            {
-                grid_coordinate[1] += stepY;
-                tMaxY += tDeltaY;
-            }
-            else
-            {
-                grid_coordinate[2] += stepZ;
-                tMaxZ += tDeltaZ;
-            }
+            grid_coordinate[2] += step_z;
+            t_max_z += t_delta_z;
         }
 
         if (!grid_coordinate_is_valid(grid_coordinate))
@@ -145,7 +162,7 @@ Cell* World::line_trace(vec3 origin, vec3 direction)
         }
     }
 
-    return NULL;
+    return hit_result;
 }
 
 Cell* World::get_cell(GridCoordinate grid_coordinate)
@@ -195,10 +212,7 @@ void World::set_block_kind_wireframe(GridCoordinate grid_coordinate_min, GridCoo
         {
             for (int x = grid_coordinate_min[0]; x <= grid_coordinate_max[0]; ++x)
             {
-                GridCoordinate grid_coordinate;
-                grid_coordinate[0] = x;
-                grid_coordinate[1] = y;
-                grid_coordinate[2] = z;
+                GridCoordinate grid_coordinate = {x,y,z};
 
                 int boundaries = 0;
 
@@ -234,10 +248,7 @@ void World::set_block_kind_cube(GridCoordinate grid_coordinate_min, GridCoordina
         {
             for (int x = grid_coordinate_min[0]; x <= grid_coordinate_max[0]; ++x)
             {
-                GridCoordinate grid_coordinate;
-                grid_coordinate[0] = x;
-                grid_coordinate[1] = y;
-                grid_coordinate[2] = z;
+                GridCoordinate grid_coordinate = {x, y, z};
 
                 set_block_kind(grid_coordinate, block_kind);
             }

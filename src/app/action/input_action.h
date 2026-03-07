@@ -28,3 +28,17 @@ struct InputAction
         remove;
     };
 };
+
+struct InputActionQueue
+{
+    uint32_t action_capacity;
+    uint32_t action_count;
+
+    InputAction* action_array;
+
+    void init(uint32_t capacity);
+    void queue(InputAction input_action);
+    bool is_empty();
+    InputAction pop();
+};
+
