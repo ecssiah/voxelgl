@@ -241,6 +241,7 @@ void camera_update(Camera* camera, Input* input, f64 dt)
         action_queue_insert(&input->action_queue, action);
     }
 
+    // TODO: This is for testing only, remove from Camera
     if (input_is_key_released(input, GLFW_KEY_TAB))
     {
         int block_kind_index = (camera->block_kind_selected + 1) % BLOCK_KIND_COUNT;
