@@ -2,6 +2,7 @@
 
 #include <cglm/cglm.h>
 
+#include "app/world/world.h"
 #include "core/types.h"
 #include "platform/input.h"
 
@@ -9,22 +10,26 @@ struct Input;
 
 struct Camera
 {
-    f32 field_of_view = 60.0f;
-    f32 aspect_ratio = 16.0f / 9.0f;
-    f32 near_plane = 0.1f;
-    f32 far_plane = 1000.0f;
+    f32 field_of_view;
+    f32 aspect_ratio;
+    f32 near_plane;
+    f32 far_plane;
 
-    mat4 projection_matrix = GLM_MAT4_IDENTITY_INIT;
-    mat4 view_matrix = GLM_MAT4_IDENTITY_INIT;
+    mat4 projection_matrix;
+    mat4 view_matrix;
 
-    vec3 position = GLM_VEC3_ZERO_INIT;
+    vec3 position;
 
-    f32 yaw = 0.0f;
-    f32 pitch = 0.0f;
-    f32 pitch_limit = GLM_PI / 2.0f - 0.01f;
+    f32 yaw;
+    f32 pitch;
+    f32 pitch_limit;
 
-    f32 speed = 8.0f;
-    f32 sensitivity = 0.4f;
+    f32 speed;
+    f32 sensitivity;
+
+    // Testing Only
+    BlockKind block_kind_selected;
+    BlockKind block_kind_selection_array[4];
 };
 
 Camera* camera_create();

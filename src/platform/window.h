@@ -17,12 +17,13 @@ struct Window
 Window* window_create();
 void window_init(Window* window);
 void window_destroy(Window* window);
+
 void window_create_glfw_window(Window* window);
 bool window_should_close(Window* window);
 void window_request_close(Window* window);
 void window_poll_events();
 f32 window_get_aspect_ratio();
-double window_calculate_delta_time(Window* window);
+f64 window_calculate_delta_time(Window* window);
 void window_set_cursor_enabled(Window* window, bool enabled);
 void* window_get_proc_address(const char* name);
 const char* window_print_info(Window* window);

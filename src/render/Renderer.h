@@ -13,13 +13,13 @@ struct Renderer
     SectorMesh sector_mesh_cache[get_world_volume_in_sectors()];
     GpuMesh gpu_mesh_cache[get_world_volume_in_sectors()];
 
-    GLuint program_id = 0;
-    GLuint texture_array_id = 0;
+    GLuint program_id;
+    GLuint texture_array_id;
 
-    GLuint mvp_uniform_location = 0;
-    GLuint texture_sampler_location = 0;
+    GLuint mvp_uniform_location;
+    GLuint texture_sampler_location;
 
-    mat4 view_projection_matrix = GLM_MAT4_IDENTITY_INIT;
+    mat4 view_projection_matrix;
 };
 
 Renderer* renderer_create();

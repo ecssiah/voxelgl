@@ -4,6 +4,7 @@
 
 struct ActionQueue;
 struct Input;
+struct Camera;
 
 enum CellFace
 {
@@ -50,24 +51,23 @@ static const char* BLOCK_KIND_NAME_ARRAY[BLOCK_KIND_COUNT] =
 
 struct Cell
 {
-    CellIndex cell_index = 0;
-    SectorIndex sector_index = 0;
+    CellIndex cell_index;
+    SectorIndex sector_index;
     
-    BlockKind block_kind = BlockKind::BLOCK_KIND_NONE;
-    u8 cell_face_mask = 0;
+    BlockKind block_kind;
+    u8 cell_face_mask;
 };
 
 struct Sector
 {
-    u32 version = 0;
-    SectorIndex sector_index = 0;
+    u32 version;
+    SectorIndex sector_index;
     
     Cell cell_array[get_sector_volume_in_cells()];
 };
 
 struct World
 {
-    ActionQueue* action_queue;
     Sector sector_array[get_world_volume_in_sectors()];
 };
 
@@ -79,7 +79,7 @@ struct HitResult
 
 World* world_create();
 bool world_init(World* world);
-void world_update(World* world, Input* input, f32 dt);
+void world_update(World* world, Input* input, Camera* camera, f32 dt);
 
 Cell* world_get_cell(World* world, GridCoordinate grid_coordinate);
 

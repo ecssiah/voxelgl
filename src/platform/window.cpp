@@ -15,6 +15,7 @@ Window* window_create()
 
 void window_init(Window* window) 
 {
+    window->glfw_window = NULL;
     window->last_time = 0.0;
 
     glfwInit();

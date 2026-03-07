@@ -7,6 +7,8 @@ Input* input_create()
 
 void input_init(Input* input)
 {
+    action_queue_init(&input->action_queue, MAX_ACTIONS_PER_FRAME);
+
     for (u32 i = 0; i < GLFW_KEY_LAST + 1; ++i)
     {
         input->current_key_array[i] = false;
@@ -23,8 +25,6 @@ void input_init(Input* input)
     input->current_mouse_y = 0.0;
     input->previous_mouse_x = 0.0;
     input->previous_mouse_y = 0.0;
-
-    action_queue_init(&input->action_queue, MAX_ACTIONS_PER_FRAME);
 }
 
 void input_begin_frame(Input* input)

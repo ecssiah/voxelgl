@@ -1,7 +1,9 @@
 #include "camera.h"
-#include "app/action/action.h"
+
+#include "app/world/world.h"
 #include "platform/input.h"
 #include "platform/window.h"
+#include "app/action/action.h"
 #include "utils/cglm_utils.h"
 
 Camera* camera_create()
@@ -13,6 +15,30 @@ Camera* camera_create()
 
 bool camera_init(Camera* camera)
 {
+    camera->field_of_view = 60.0f;
+    camera->aspect_ratio = 16.0f / 9.0f;
+    camera->near_plane = 0.1f;
+    camera->far_plane = 1000.0f;
+    
+    camera->block_kind_selected = BLOCK_KIND_WOLF;
+
+    camera->block_kind_selection_array[0] = BLOCK_KIND_WOLF;
+    camera->block_kind_selection_array[1] = BLOCK_KIND_EAGLE;
+    camera->block_kind_selection_array[2] = BLOCK_KIND_LION;
+    camera->block_kind_selection_array[3] = BLOCK_KIND_HORSE;
+
+    glm_mat4_identity(camera->projection_matrix);
+    glm_mat4_identity(camera->view_matrix);
+
+    glm_vec3_zero(camera->position);
+
+    camera->yaw = 0.0f;
+    camera->pitch = 0.0f;
+    camera->pitch_limit = GLM_PI / 2.0f - 0.01f;
+
+    camera->speed = 8.0f;
+    camera->sensitivity = 0.4f;
+
     camera_set_position(camera, 0.0f, 0.0f, 5.0f);
     camera_set_yaw(camera, -90.0f);
     camera_set_pitch(camera, 0.0f);
@@ -30,10 +56,10 @@ bool camera_init(Camera* camera)
 
 void camera_set_perspective(Camera* camera, f32 field_of_view, f32 aspect_ratio, f32 near_plane, f32 far_plane) 
 {
-    field_of_view = field_of_view;
-    aspect_ratio = aspect_ratio;
-    near_plane = near_plane;
-    far_plane = far_plane;
+    camera->field_of_view = field_of_view;
+    camera->aspect_ratio = aspect_ratio;
+    camera->near_plane = near_plane;
+    camera->far_plane = far_plane;
 
     camera_rebuild_projection_matrix(camera);
 }
@@ -215,6 +241,18 @@ void camera_update(Camera* camera, Input* input, f64 dt)
         action_queue_insert(&input->action_queue, action);
     }
 
+    if (input_is_key_released(input, GLFW_KEY_TAB))
+    {
+        int block_kind_index = (camera->block_kind_selected + 1) % BLOCK_KIND_COUNT;
+        
+        if (block_kind_index == 0)
+        {
+            block_kind_index = 1;
+        }
+
+        camera->block_kind_selected = (BlockKind)(block_kind_index);
+    }
+
     cglm_ext_vec3_normalize_safe(input_value);
 
     vec3 right, forward;
@@ -242,6 +280,7 @@ void camera_update(Camera* camera, Input* input, f64 dt)
     cglm_ext_vec3_normalize_safe(delta_position);
 
     glm_vec3_scale(delta_position, dt * camera->speed, delta_position);
+
     glm_vec3_add(camera->position, delta_position, camera->position);
 
     camera->yaw += dt * camera->sensitivity * input_get_mouse_dx(input);

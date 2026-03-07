@@ -29,7 +29,7 @@ void input_destroy(Input* input);
 void input_begin_frame(Input* input);
 void input_handle_key(Input* input, int key, int scancode, int action, int mods);
 void input_handle_mouse_button(Input* input, int button, int action, int mods);
-void input_handle_cursor_position(Input* input, double xpos, double ypos);
+void input_handle_cursor_position(Input* input, f64 xpos, f64 ypos);
 
 bool input_is_key_pressed(Input* input, int key);
 bool input_is_key_released(Input* input, int key);

@@ -8,6 +8,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "app/camera.h"
 #include "core/utils.h"
 #include "platform/input.h"
 #include "app/world/grid.h"
@@ -53,7 +54,7 @@ bool world_init(World* world)
     return true;
 }
 
-void world_update(World* world, Input* input, f32 dt)
+void world_update(World* world, Input* input, Camera* camera, f32 dt)
 {
     while (!action_queue_is_empty(&input->action_queue))
     {
@@ -75,7 +76,7 @@ void world_update(World* world, Input* input, f32 dt)
                     grid_coordinate
                 );
 
-                world_set_block_kind(world, grid_coordinate, BLOCK_KIND_WOLF);
+                world_set_block_kind(world, grid_coordinate, camera->block_kind_selected);
             }
 
             break;
@@ -292,12 +293,8 @@ HitResult world_line_trace(World* world, vec3 origin, vec3 direction, f32 distan
 
     int MAX_FRAMES = 128;
 
-    glm_vec3_print(origin, stdout);
-
     for (int i = 0; i < MAX_FRAMES; ++i)
     {
-        glm_ivec3_print(grid_coordinate, stdout);
-
         f32 current_t = MIN3(t_max_x, t_max_y, t_max_z);
 
         if (current_t > distance)

@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdio>
 #include <stb_image.h>
+#include <vector>
 
 #include "app/world/world.h"
 #include "app/world/grid.h"
@@ -18,8 +19,15 @@ Renderer* renderer_create()
     return renderer;
 }
 
-bool renderer_init(Renderer* renderer) 
+bool renderer_init(Renderer* renderer)
 {
+    renderer->program_id = 0;
+    renderer->texture_array_id = 0;
+    renderer->mvp_uniform_location = 0;
+    renderer->texture_sampler_location = 0;
+
+    glm_mat4_identity(renderer->view_projection_matrix);
+
     std::string vert_shader_src = shader_load("assets/shaders/voxel.vert");
     std::string frag_shader_src = shader_load("assets/shaders/voxel.frag");
 
@@ -61,6 +69,17 @@ bool renderer_init(Renderer* renderer)
     glDeleteShader(frag_shader_id);
 
     glEnable(GL_DEPTH_TEST);
+
+    for (u32 i = 0; i < get_world_volume_in_sectors(); ++i)
+    {
+        renderer->sector_mesh_cache[i] = {
+            .version = 0,
+        };
+
+        renderer->gpu_mesh_cache[i] = {
+            .version = 0,
+        };
+    }
 
     return true;
 }
@@ -159,7 +178,7 @@ void r_build_sector_mesh(Renderer* renderer, Sector* sector, SectorMesh* out_sec
     {
         return;
     }
-
+    
     SectorCoordinate sector_coordinate;
     sector_index_to_sector_coordinate(sector->sector_index, sector_coordinate);
 
@@ -308,11 +327,10 @@ void r_upload_mesh(Renderer* renderer, SectorMesh* sector_mesh, GpuMesh* out_gpu
         (void*)offsetof(VertexData, uv)
     );
 
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         3,
         1,
         GL_UNSIGNED_BYTE,
-        GL_FALSE,
         sizeof(VertexData),
         (void*)offsetof(VertexData, texture_index)
     );
@@ -328,7 +346,6 @@ void r_upload_mesh(Renderer* renderer, SectorMesh* sector_mesh, GpuMesh* out_gpu
     glm_translate(out_gpu_mesh->model_matrix, sector_mesh->sector_world_position);
 
     out_gpu_mesh->index_count = sector_mesh->index_vec.size();
-
     out_gpu_mesh->version = sector_mesh->version;
 }
 
