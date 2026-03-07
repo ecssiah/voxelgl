@@ -77,6 +77,7 @@ struct HitResult
     Cell* hit_cell;
 };
 
+World* world_create();
 bool world_init(World* world);
 void world_update(World* world, Input* input, f32 dt);
 

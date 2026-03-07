@@ -12,25 +12,24 @@ App* app_create()
 {
     App* app = (App*)malloc(sizeof (App));
 
+    app->window = window_create();
+    app->input = input_create();
+    app->camera = camera_create();
+    app->world = world_create();
+    app->renderer = renderer_create();
+
     return app;
 }
 
 bool app_init(App* app)
 {
     window_init(app->window);
-    window_create_glfw_window(app->window);
-
-    if (!gladLoadGLLoader((GLADloadproc)window_get_proc_address)) 
-    {
-        printf("Failed to initialize GLAD\n");
-
-        return false;
-    }
-
     input_init(app->input);
-    renderer_init(app->renderer);
-    
+    camera_init(app->camera);
     world_init(app->world);
+    renderer_init(app->renderer);
+
+    glfwSetWindowUserPointer(app->window->glfw_window, app->input);
 
     return true;
 }
@@ -40,7 +39,8 @@ void app_run(App* app)
     while (!window_should_close(app->window)) 
     {
         input_begin_frame(app->input);
-        window_poll_events(app->window);
+
+        window_poll_events();
 
         f64 dt = window_calculate_delta_time(app->window);
 

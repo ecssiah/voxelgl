@@ -11,6 +11,13 @@
 #include "render/sector_mesh.h"
 #include "utils/shader_utils.h"
 
+Renderer* renderer_create()
+{
+    Renderer* renderer = (Renderer*)malloc(sizeof (Renderer));
+
+    return renderer;
+}
+
 bool renderer_init(Renderer* renderer) 
 {
     std::string vert_shader_src = shader_load("assets/shaders/voxel.vert");

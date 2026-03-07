@@ -36,7 +36,7 @@ void input_begin_frame(Input* input)
 
     for (u32 i = 0; i < GLFW_MOUSE_BUTTON_LAST + 1; ++i)
     {
-        input->previous_mouse_array[i] = input->previous_mouse_array[i];
+        input->previous_mouse_array[i] = input->current_mouse_array[i];
     }
 
     input->previous_mouse_x = input->current_mouse_x;

@@ -1,4 +1,5 @@
 #include "platform/window.h"
+#include "platform/input.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -32,19 +33,26 @@ void window_create_glfw_window(Window* window)
 
     GLFWwindow* glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, nullptr, nullptr);
 
-    if (!glfw_window) 
+    if (glfw_window) 
+    {
+        glfwMakeContextCurrent(glfw_window);
+
+        glfwSetKeyCallback(glfw_window, glfw_key_callback);
+        glfwSetMouseButtonCallback(glfw_window, glfw_mouse_button_callback);
+        glfwSetCursorPosCallback(glfw_window, glfw_cursor_position_callback);
+
+        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+        window->glfw_window = glfw_window;
+
+        window_set_cursor_enabled(window, false);
+    }
+    else
     {
         printf("Failed to create GLFW window\n");
+
         glfwTerminate();
     }
-
-    glfwMakeContextCurrent(glfw_window);
-
-    glfwSetKeyCallback(glfw_window, glfw_key_callback);
-    glfwSetMouseButtonCallback(glfw_window, glfw_mouse_button_callback);
-    glfwSetCursorPosCallback(glfw_window, glfw_cursor_position_callback);
-
-    window_set_cursor_enabled(window, false);
 }
 
 void window_destroy(Window* window) 
@@ -75,7 +83,7 @@ void window_swap_buffers(Window* window)
     glfwSwapBuffers(window->glfw_window);
 }
 
-void window_poll_events(Window* window) 
+void window_poll_events() 
 {
     glfwPollEvents();
 }
@@ -105,7 +113,7 @@ void window_print_info()
 
 f32 window_get_aspect_ratio()
 {
-    return WINDOW_WIDTH / static_cast<f32>(WINDOW_HEIGHT);
+    return (f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT;
 }
 
 f64 window_calculate_delta_time(Window* window) 
@@ -127,17 +135,23 @@ void window_set_cursor_enabled(Window* window, bool enabled)
     );
 }
 
-void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    // InputSystem::handle_key(key, scancode, action, mods);
+    Input* input = (Input*)glfwGetWindowUserPointer(window);
+
+    input_handle_key(input, key, scancode, action, mods);
 }
 
-void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+static void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-    // InputSystem::handle_mouse_button(button, action, mods);
+    Input* input = (Input*)glfwGetWindowUserPointer(window);
+
+    input_handle_mouse_button(input, button, action, mods);
 }
 
-void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+static void glfw_cursor_position_callback(GLFWwindow* window, f64 xpos, f64 ypos)
 {
-    // InputSystem::handle_cursor_position(xpos, ypos);
+    Input* input = (Input*)glfwGetWindowUserPointer(window);
+
+    input_handle_cursor_position(input, xpos, ypos);
 }

@@ -13,6 +13,13 @@
 #include "app/world/grid.h"
 #include "app/action/action.h"
 
+World* world_create()
+{
+    World* world = (World*)malloc(sizeof (World));
+
+    return world;
+}
+
 bool world_init(World* world)
 {
     srand((unsigned int)time(NULL));
