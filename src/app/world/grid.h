@@ -1,20 +1,22 @@
 #pragma once
 
-#include <cglm/cglm.h>
 #include <cmath>
-#include <cstdint>
 
-typedef uint32_t SectorIndex;
+#include <cglm/cglm.h>
+
+#include "core/types.h"
+
+typedef u32 SectorIndex;
 typedef ivec3 SectorCoordinate;
 
-typedef uint32_t CellIndex;
+typedef u32 CellIndex;
 typedef ivec3 CellCoordinate;
 
 typedef ivec3 GridCoordinate;
 
 static constexpr int WORLD_RADIUS_IN_SECTORS = 2;
 static constexpr int SECTOR_RADIUS_IN_CELLS = 2;
-static constexpr float CELL_RADIUS = 0.5f;
+static constexpr f32 CELL_RADIUS = 0.5f;
 
 static constexpr int get_world_size_in_sectors()
 {
@@ -59,19 +61,19 @@ static constexpr int get_world_radius_in_cells()
     return WORLD_RADIUS_IN_SECTORS * get_sector_size_in_cells() + SECTOR_RADIUS_IN_CELLS;
 }
 
-static constexpr float get_cell_size()
+static constexpr f32 get_cell_size()
 {
     return 2 * CELL_RADIUS;
 }
 
-static constexpr float get_cell_area()
+static constexpr f32 get_cell_area()
 {
     int cell_size = get_cell_size();
 
     return cell_size * cell_size;
 }
 
-static constexpr float get_cell_volume()
+static constexpr f32 get_cell_volume()
 {
     int cell_size = get_cell_size();
 
@@ -119,11 +121,11 @@ inline bool grid_coordinate_is_valid(GridCoordinate grid_coordinate)
 
 inline void grid_coordinate_to_world_position(GridCoordinate grid_coordinate, vec3 out_world_position)
 {
-    float cell_size = get_cell_size();
+    f32 cell_size = get_cell_size();
 
-    out_world_position[0] = (float)grid_coordinate[0] * cell_size;
-    out_world_position[1] = (float)grid_coordinate[1] * cell_size;
-    out_world_position[2] = (float)grid_coordinate[2] * cell_size;
+    out_world_position[0] = (f32)grid_coordinate[0] * cell_size;
+    out_world_position[1] = (f32)grid_coordinate[1] * cell_size;
+    out_world_position[2] = (f32)grid_coordinate[2] * cell_size;
 }
 
 inline void sector_index_to_sector_coordinate(SectorIndex sector_index, SectorCoordinate out_sector_coordinate)

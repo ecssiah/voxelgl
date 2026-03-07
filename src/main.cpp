@@ -1,14 +1,14 @@
-#include <voxelgl/app.h>
+#include "app/app.h"
 
 int main()
 {
-    voxelgl::App app;
+    App* app = app_create();
 
-    if (app.init()) 
+    if (app_init(app)) 
     {
-        app.run();
-        app.exit();
-    
+        app_run(app);
+        app_destroy(app);
+
         return 0;
     }
     else

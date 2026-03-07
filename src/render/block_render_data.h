@@ -1,9 +1,13 @@
-#include "app/world/cell.h"
+#include "app/world/world.h"
 
-const uint8_t FACES_PER_VOXEL = 6;
-const uint8_t VERTICES_PER_FACE = 4;
-const uint8_t BLOCK_TEXTURE_SIZE = 64;
-const float BLOCK_RADIUS = 0.5f;
+#include <cglm/cglm.h>
+
+#include "core/types.h"
+
+const u8 FACES_PER_VOXEL = 6;
+const u8 VERTICES_PER_FACE = 4;
+const u8 BLOCK_TEXTURE_SIZE = 64;
+const f32 BLOCK_RADIUS = 0.5f;
 
 static vec3 FACE_VERTEX_ARRAY[FACES_PER_VOXEL][VERTICES_PER_FACE] =
 {

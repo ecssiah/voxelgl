@@ -6,10 +6,10 @@
 
 struct SectorMesh
 {
-    uint32_t m_version = 0;
+    uint32_t version = 0;
 
-    vec3 m_sector_world_position = GLM_VEC3_ZERO_INIT;
+    vec3 sector_world_position = GLM_VEC3_ZERO_INIT;
 
-    std::vector<VertexData> m_vertex_vec = {};
-    std::vector<uint32_t> m_index_vec = {};
+    std::vector<VertexData> vertex_vec = {};
+    std::vector<uint32_t> index_vec = {};
 };

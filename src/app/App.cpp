@@ -1,143 +1,78 @@
-#include "voxelgl/app.h"
-#include "platform/input_system.h"
-#include "platform/window_system.h"
-#include "render/renderer.h"
+#include "app/app.h"
 
-#include <iostream>
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
 
-namespace voxelgl
+#include "platform/input.h"
+#include "app/camera.h"
+#include "platform/window.h"
+#include "render/renderer.h"
+
+App* app_create()
 {
+    App* app = (App*)malloc(sizeof (App));
 
-bool App::init()
+    return app;
+}
+
+bool app_init(App* app)
 {
-    if (!WindowSystem::init()) 
+    window_init(app->window);
+    window_create_glfw_window(app->window);
+
+    if (!gladLoadGLLoader((GLADloadproc)window_get_proc_address)) 
     {
-        std::cerr << "Failed to initialize\n";
+        printf("Failed to initialize GLAD\n");
 
         return false;
     }
 
-    if (!WindowSystem::create("VoxelGL")) 
-    {
-        return false;
-    }
-
-    if (!gladLoadGLLoader((GLADloadproc)WindowSystem::get_proc_address)) 
-    {
-        std::cerr << "Failed to initialize GLAD\n";
-
-        return false;
-    }
-
-    if (!InputSystem::init())
-    {
-        return false;
-    }
-
-    if (!m_camera.init())
-    {
-        return false;
-    }
-
-    if (!m_renderer.init())
-    {
-        return false;
-    }
-
-    if (!m_world.init())
-    {
-        return false;
-    }
-
-    setup_demo_world();
+    input_init(app->input);
+    renderer_init(app->renderer);
+    
+    world_init(app->world);
 
     return true;
 }
 
-void App::setup_demo_world()
+void app_run(App* app) 
 {
-    const int OFFSET = 8;
-    const int RADIUS = 1;
-
-    m_world.set_block_kind(ivec3{+1, +0, +0}, BLOCK_KIND_EAGLE);
-    m_world.set_block_kind(ivec3{-1, +0, +0}, BLOCK_KIND_LION);
-    m_world.set_block_kind(ivec3{+0, +1, +0}, BLOCK_KIND_WOLF);
-    m_world.set_block_kind(ivec3{+0, -1, +0}, BLOCK_KIND_HORSE);
-
-    m_world.set_block_kind_cube(
-        ivec3{-8, -4, -8}, 
-        ivec3{+8, -4, +8}, 
-        BLOCK_KIND_STONE
-    );
-
-    m_world.set_block_kind_cube(
-        ivec3{+OFFSET - RADIUS, -RADIUS, -RADIUS}, 
-        ivec3{+OFFSET + RADIUS, +RADIUS, +RADIUS}, 
-        BLOCK_KIND_EAGLE
-    );
-
-    m_world.set_block_kind_cube(
-        ivec3{-OFFSET - RADIUS, -RADIUS, -RADIUS}, 
-        ivec3{-OFFSET + RADIUS, +RADIUS, +RADIUS}, 
-        BLOCK_KIND_LION
-    );
-
-    m_world.set_block_kind_cube(
-        ivec3{-RADIUS, -RADIUS, OFFSET - RADIUS}, 
-        ivec3{+RADIUS, +RADIUS, OFFSET + RADIUS}, 
-        BLOCK_KIND_HORSE
-    );
-
-    m_world.set_block_kind_cube(
-        ivec3{-RADIUS, -RADIUS, -OFFSET - RADIUS}, 
-        ivec3{+RADIUS, +RADIUS, -OFFSET + RADIUS}, 
-        BLOCK_KIND_WOLF
-    );
-}
-
-void App::run() 
-{
-    while (!WindowSystem::should_close()) 
+    while (!window_should_close(app->window)) 
     {
-        InputSystem::begin_frame();
-        WindowSystem::poll_events();
+        input_begin_frame(app->input);
+        window_poll_events(app->window);
 
-        const double dt = WindowSystem::get_dt();
+        f64 dt = window_calculate_delta_time(app->window);
 
-        update(dt);
-        render();
+        app_update(app, dt);
+        app_render(app);
 
-        WindowSystem::swap_buffers();
+        window_swap_buffers(app->window);
     }
 }
 
-void App::exit()
+void app_update(App* app, f64 dt)
 {
-    WindowSystem::destroy();
-}
-
-void App::update(double dt) 
-{
-    if (InputSystem::is_key_pressed(GLFW_KEY_ESCAPE) == GL_TRUE)
+    if (input_is_key_pressed(app->input, GLFW_KEY_ESCAPE) == GL_TRUE)
     {
-        WindowSystem::request_close();
+        window_request_close(app->window);
     }
-
-    m_world.update(dt);
-
-    m_camera.update(dt);
-    m_renderer.update(&m_world);
+    
+    world_update(app->world, app->input, dt);
+    camera_update(app->camera, app->input, dt);
+    renderer_update(app->renderer, app->world);
 }
 
-void App::render()
+void app_render(App* app)
 {
     mat4 view_matrix, projection_matrix;
-    m_camera.get_view_matrix(view_matrix);
-    m_camera.get_projection_matrix(projection_matrix);
+    camera_get_view_matrix(app->camera, view_matrix);
+    camera_get_projection_matrix(app->camera, projection_matrix);
 
-    m_renderer.render(view_matrix, projection_matrix);
+    renderer_render(app->renderer, view_matrix, projection_matrix);
 }
 
+void app_destroy(App* app)
+{
+    free(app);
 }

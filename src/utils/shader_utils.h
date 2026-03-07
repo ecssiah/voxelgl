@@ -5,10 +5,7 @@
 #include <sstream>
 #include <glad/glad.h>
 
-namespace shader_utils
-{
-
-static std::string load_text_file(const char* filename)
+static std::string shader_load(const char* filename)
 {
     std::ifstream file(filename, std::ios::in);
 
@@ -25,7 +22,7 @@ static std::string load_text_file(const char* filename)
     return buffer.str();
 }
 
-static GLuint compile_shader(GLuint type_id, const char* src) 
+static GLuint shader_compile(GLuint type_id, const char* src) 
 {
     GLuint shader_id = glCreateShader(type_id);
 
@@ -44,6 +41,4 @@ static GLuint compile_shader(GLuint type_id, const char* src)
     }
 
     return shader_id;
-}
-
 }

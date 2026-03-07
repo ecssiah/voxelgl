@@ -29,7 +29,6 @@ target_include_directories(
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/include
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/stb/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
@@ -51,15 +50,13 @@ target_sources(
     voxelgl 
     PRIVATE
     vendor/glad/src/glad.c
-    src/platform/window_system.cpp
-    src/platform/input_system.cpp
+    src/platform/window.cpp
+    src/platform/input.cpp
     src/render/renderer.cpp
     src/render/stb_image_loader.cpp
     src/app/app.cpp
     src/app/camera.cpp
-    src/app/action/input_action.cpp
-    src/app/world/cell.cpp
-    src/app/world/sector.cpp
+    src/app/action/action.cpp
     src/app/world/world.cpp
 )
 

@@ -2,47 +2,53 @@
 
 #include <cglm/cglm.h>
 
+#include "core/types.h"
+#include "platform/input.h"
+
+struct Input;
+
 struct Camera
 {
-    float m_field_of_view = 60.0f;
-    float m_aspect_ratio = 16.0f / 9.0f;
-    float m_near_plane = 0.1f;
-    float m_far_plane = 1000.0f;
+    f32 field_of_view = 60.0f;
+    f32 aspect_ratio = 16.0f / 9.0f;
+    f32 near_plane = 0.1f;
+    f32 far_plane = 1000.0f;
 
-    mat4 m_projection_matrix = GLM_MAT4_IDENTITY_INIT;
-    mat4 m_view_matrix = GLM_MAT4_IDENTITY_INIT;
+    mat4 projection_matrix = GLM_MAT4_IDENTITY_INIT;
+    mat4 view_matrix = GLM_MAT4_IDENTITY_INIT;
 
-    vec3 m_position = GLM_VEC3_ZERO_INIT;
+    vec3 position = GLM_VEC3_ZERO_INIT;
 
-    float m_yaw = 0.0f;
-    float m_pitch = 0.0f;
-    float m_pitch_limit = GLM_PI / 2.0f - 0.01f;
+    f32 yaw = 0.0f;
+    f32 pitch = 0.0f;
+    f32 pitch_limit = GLM_PI / 2.0f - 0.01f;
 
-    float m_speed = 8.0f;
-    float m_sensitivity = 0.4f;
-
-    bool init();
-
-    void set_perspective(float field_of_view, float aspect_ratio, float near_plane, float far_plane);
-
-    void update(double dt);
-
-    void get_view_matrix(mat4 out_view_matrix);
-    void get_projection_matrix(mat4 out_projection_matrix);
-
-    void get_position(vec3 out_position);
-    void set_position(float x, float y, float z);
-
-    float get_yaw();
-    void set_yaw(float yaw);
-
-    float get_pitch();
-    void set_pitch(float pitch);
-
-    void get_forward(vec3 out_forward);
-    void get_right(vec3 out_right);
-    void get_up(vec3 out_up);
-
-    void rebuild_projection_matrix();
-    void rebuild_view_matrix();
+    f32 speed = 8.0f;
+    f32 sensitivity = 0.4f;
 };
+
+Camera* camera_create();
+bool camera_init(Camera* camera);
+
+void camera_set_perspective(Camera* camera, f32 field_of_view, f32 aspect_ratio, f32 near_plane, f32 far_plane);
+
+void camera_update(Camera* camera, Input* input, f64 dt);
+
+void camera_get_view_matrix(Camera* camera, mat4 out_view_matrix);
+void camera_get_projection_matrix(Camera* camera, mat4 out_projection_matrix);
+
+void camera_get_position(Camera* camera, vec3 out_position);
+void camera_set_position(Camera* camera, f32 x, f32 y, f32 z);
+
+f32 camera_get_yaw(Camera* camera);
+void camera_set_yaw(Camera* camera, f32 yaw);
+
+f32 camera_get_pitch(Camera* camera);
+void camera_set_pitch(Camera* camera, f32 pitch);
+
+void camera_get_forward(Camera* camera, vec3 out_forward);
+void camera_get_right(Camera* camera, vec3 out_right);
+void camera_get_up(Camera* camera, vec3 out_up);
+
+void camera_rebuild_projection_matrix(Camera* camera);
+void camera_rebuild_view_matrix(Camera* camera);

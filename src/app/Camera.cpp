@@ -1,19 +1,26 @@
 #include "camera.h"
-#include "app/world/world.h"
-#include "platform/input_system.h"
-#include "platform/window_system.h"
+#include "app/action/action.h"
+#include "platform/input.h"
+#include "platform/window.h"
 #include "utils/cglm_utils.h"
 
-
-bool Camera::init()
+Camera* camera_create()
 {
-    set_position(0.0f, 0.0f, 5.0f);
-    set_yaw(-90.0f);
-    set_pitch(0.0f);
+    Camera* camera = (Camera*)malloc(sizeof (Camera));
 
-    set_perspective(
+    return camera;
+}
+
+bool camera_init(Camera* camera)
+{
+    camera_set_position(camera, 0.0f, 0.0f, 5.0f);
+    camera_set_yaw(camera, -90.0f);
+    camera_set_pitch(camera, 0.0f);
+
+    camera_set_perspective(
+        camera,
         glm_rad(60.0f),
-        WindowSystem::get_aspect_ratio(),
+        window_get_aspect_ratio(),
         0.1f,
         1000.0f
     );
@@ -21,198 +28,198 @@ bool Camera::init()
     return true;
 }
 
-void Camera::set_perspective(float field_of_view, float aspect_ratio, float near_plane, float far_plane) 
+void camera_set_perspective(Camera* camera, f32 field_of_view, f32 aspect_ratio, f32 near_plane, f32 far_plane) 
 {
-    m_field_of_view = field_of_view;
-    m_aspect_ratio = aspect_ratio;
-    m_near_plane = near_plane;
-    m_far_plane = far_plane;
+    field_of_view = field_of_view;
+    aspect_ratio = aspect_ratio;
+    near_plane = near_plane;
+    far_plane = far_plane;
 
-    rebuild_projection_matrix();
+    camera_rebuild_projection_matrix(camera);
 }
 
-void Camera::rebuild_view_matrix()
+void camera_rebuild_view_matrix(Camera* camera)
 {
     vec3 forward;
-    get_forward(forward);
+    camera_get_forward(camera, forward);
 
     vec3 target;
-    glm_vec3_add(m_position, forward, target);
+    glm_vec3_add(camera->position, forward, target);
 
     vec3 up;
     glm_vec3_copy(GLM_YUP, up);
 
     glm_lookat(
-        m_position, 
+        camera->position, 
         target, 
         up,
-        m_view_matrix
+        camera->view_matrix
     );
 }
 
-void Camera::rebuild_projection_matrix()
+void camera_rebuild_projection_matrix(Camera* camera)
 {
     glm_perspective(
-        m_field_of_view,
-        m_aspect_ratio,
-        m_near_plane,
-        m_far_plane,
-        m_projection_matrix
+        camera->field_of_view,
+        camera->aspect_ratio,
+        camera->near_plane,
+        camera->far_plane,
+        camera->projection_matrix
     );
 }
 
-void Camera::get_view_matrix(mat4 out_view_matrix) 
+void camera_get_view_matrix(Camera* camera, mat4 out_view_matrix) 
 {
-    glm_mat4_copy(m_view_matrix, out_view_matrix);
+    glm_mat4_copy(camera->view_matrix, out_view_matrix);
 }
 
-void Camera::get_projection_matrix(mat4 out_projection_matrix) 
+void camera_get_projection_matrix(Camera* camera, mat4 out_projection_matrix) 
 {
-    glm_mat4_copy(m_projection_matrix, out_projection_matrix);
+    glm_mat4_copy(camera->projection_matrix, out_projection_matrix);
 }
 
-void Camera::get_position(vec3 out_position) 
+void camera_get_position(Camera* camera, vec3 out_position) 
 {
-    glm_vec3_copy(m_position, out_position);
+    glm_vec3_copy(camera->position, out_position);
 }
 
-void Camera::set_position(float x, float y, float z)
+void camera_set_position(Camera* camera, f32 x, f32 y, f32 z)
 {
-    m_position[0] = x;
-    m_position[1] = y;
-    m_position[2] = z;
+    camera->position[0] = x;
+    camera->position[1] = y;
+    camera->position[2] = z;
 }
 
-float Camera::get_yaw()
+f32 camera_get_yaw(Camera* camera)
 {
-    return glm_deg(m_yaw);
+    return glm_deg(camera->yaw);
 }
 
-float Camera::get_pitch() 
+f32 camera_get_pitch(Camera* camera) 
 {
-    return glm_deg(m_pitch);
+    return glm_deg(camera->pitch);
 }
 
-void Camera::get_forward(vec3 out_forward) 
+void camera_get_forward(Camera* camera, vec3 out_forward) 
 {
-    out_forward[0] = cosf(m_yaw) * cosf(m_pitch);
-    out_forward[1] = sinf(m_pitch);
-    out_forward[2] = sinf(m_yaw) * cosf(m_pitch);
+    out_forward[0] = cosf(camera->yaw) * cosf(camera->pitch);
+    out_forward[1] = sinf(camera->pitch);
+    out_forward[2] = sinf(camera->yaw) * cosf(camera->pitch);
 
-    cglm_utils::vec3_normalize_safe(out_forward);
+    cglm_ext_vec3_normalize_safe(out_forward);
 }
 
-void Camera::get_right(vec3 out_right)
+void camera_get_right(Camera* camera, vec3 out_right)
 {
     vec3 forward;
-    get_forward(forward);
+    camera_get_forward(camera, forward);
 
     vec3 up;
     glm_vec3_copy(GLM_YUP, up);
 
     glm_vec3_cross(forward, up, out_right);
     
-    cglm_utils::vec3_normalize_safe(out_right);
+    cglm_ext_vec3_normalize_safe(out_right);
 }
 
-void Camera::get_up(vec3 out_up)
+void camera_get_up(Camera* camera, vec3 out_up)
 {
     vec3 forward, right;
 
-    get_forward(forward);
-    get_right(right);
+    camera_get_forward(camera, forward);
+    camera_get_right(camera, right);
 
     glm_vec3_cross(right, forward, out_up);
     glm_vec3_normalize(out_up);
 }
 
-void Camera::set_yaw(float yaw)
+void camera_set_yaw(Camera* camera, f32 yaw)
 {
-    m_yaw = glm_rad(yaw);
+    camera->yaw = glm_rad(yaw);
 }
 
-void Camera::set_pitch(float pitch)
+void camera_set_pitch(Camera* camera, f32 pitch)
 {
-    m_pitch = glm_rad(pitch);
+    camera->pitch = glm_rad(pitch);
 }
 
-void Camera::update(double dt)
+void camera_update(Camera* camera, Input* input, f64 dt)
 {
     vec3 input_value = GLM_VEC3_ZERO_INIT;
     
-    if (InputSystem::is_key_down(GLFW_KEY_D))
+    if (input_is_key_down(input, GLFW_KEY_D))
     {
         input_value[0] += 1.0f;
     }
     
-    if (InputSystem::is_key_down(GLFW_KEY_A))
+    if (input_is_key_down(input, GLFW_KEY_A))
     {
         input_value[0] -= 1.0f;
     }
 
-    if (InputSystem::is_key_down(GLFW_KEY_E))
+    if (input_is_key_down(input, GLFW_KEY_E))
     {
         input_value[1] += 1.0f;
     }
 
-    if (InputSystem::is_key_down(GLFW_KEY_Q))
+    if (input_is_key_down(input, GLFW_KEY_Q))
     {
         input_value[1] -= 1.0f;
     }
     
-    if (InputSystem::is_key_down(GLFW_KEY_W))
+    if (input_is_key_down(input, GLFW_KEY_W))
     {
         input_value[2] += 1.0f;
     }
     
-    if (InputSystem::is_key_down(GLFW_KEY_S))
+    if (input_is_key_down(input, GLFW_KEY_S))
     {
         input_value[2] -= 1.0f;
     }
 
-    if (InputSystem::is_mouse_button_released(GLFW_MOUSE_BUTTON_LEFT))
+    if (input_is_mouse_button_released(input, GLFW_MOUSE_BUTTON_LEFT))
     {
         vec3 origin;
-        glm_vec3_copy(m_position, origin);
+        glm_vec3_copy(camera->position, origin);
 
         vec3 direction;
-        get_forward(direction);
+        camera_get_forward(camera, direction);
 
-        InputAction input_action =
+        Action action =
         {
-            .input_action_type = INPUT_ACTION_PLACE
+            .action_type = ACTION_PLACE
         };
 
-        glm_vec3_copy(origin, input_action.place.origin);
-        glm_vec3_copy(direction, input_action.place.direction);
+        glm_vec3_copy(origin, action.place.origin);
+        glm_vec3_copy(direction, action.place.direction);
 
-        InputSystem::input_action_queue.queue(input_action);
+        action_queue_insert(&input->action_queue, action);
     }
 
-    if (InputSystem::is_mouse_button_released(GLFW_MOUSE_BUTTON_RIGHT))
+    if (input_is_mouse_button_released(input, GLFW_MOUSE_BUTTON_RIGHT))
     {
         vec3 origin;
-        glm_vec3_copy(m_position, origin);
+        glm_vec3_copy(camera->position, origin);
 
         vec3 direction;
-        get_forward(direction);
+        camera_get_forward(camera, direction);
 
-        InputAction input_action =
+        Action action =
         {
-            .input_action_type = INPUT_ACTION_REMOVE
+            .action_type = ACTION_REMOVE
         };
 
-        glm_vec3_copy(origin, input_action.remove.origin);
-        glm_vec3_copy(direction, input_action.remove.direction);
+        glm_vec3_copy(origin, action.remove.origin);
+        glm_vec3_copy(direction, action.remove.direction);
 
-        InputSystem::input_action_queue.queue(input_action);
+        action_queue_insert(&input->action_queue, action);
     }
 
-    cglm_utils::vec3_normalize_safe(input_value);
+    cglm_ext_vec3_normalize_safe(input_value);
 
     vec3 right, forward;
-    get_right(right);
-    get_forward(forward);
+    camera_get_right(camera, right);
+    camera_get_forward(camera, forward);
 
     vec3 unit_y = GLM_VEC3_ZERO_INIT;
     unit_y[1] = 1.0f;
@@ -221,7 +228,7 @@ void Camera::update(double dt)
     glm_vec3_copy(forward, forward_xy);
     forward_xy[1] = 0.0f;
 
-    cglm_utils::vec3_normalize_safe(forward_xy);
+    cglm_ext_vec3_normalize_safe(forward_xy);
 
     glm_vec3_scale(right, input_value[0], right);
     glm_vec3_scale(unit_y, input_value[1], unit_y);
@@ -232,23 +239,23 @@ void Camera::update(double dt)
     glm_vec3_add(delta_position, forward_xy, delta_position);
     glm_vec3_add(delta_position, unit_y, delta_position);
 
-    cglm_utils::vec3_normalize_safe(delta_position);
+    cglm_ext_vec3_normalize_safe(delta_position);
 
-    glm_vec3_scale(delta_position, dt * m_speed, delta_position);
-    glm_vec3_add(m_position, delta_position, m_position);
+    glm_vec3_scale(delta_position, dt * camera->speed, delta_position);
+    glm_vec3_add(camera->position, delta_position, camera->position);
 
-    m_yaw += dt * m_sensitivity * InputSystem::get_mouse_dx();
-    m_pitch -= dt * m_sensitivity * InputSystem::get_mouse_dy();
+    camera->yaw += dt * camera->sensitivity * input_get_mouse_dx(input);
+    camera->pitch -= dt * camera->sensitivity * input_get_mouse_dy(input);
 
-    if (m_pitch > m_pitch_limit) 
+    if (camera->pitch > camera->pitch_limit) 
     {
-        m_pitch = m_pitch_limit;
+        camera->pitch = camera->pitch_limit;
     }
 
-    if (m_pitch < -m_pitch_limit) 
+    if (camera->pitch < -camera->pitch_limit) 
     {
-        m_pitch = -m_pitch_limit;
+        camera->pitch = -camera->pitch_limit;
     }
 
-    rebuild_view_matrix();
+    camera_rebuild_view_matrix(camera);
 }

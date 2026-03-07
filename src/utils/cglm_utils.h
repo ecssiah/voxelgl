@@ -2,10 +2,7 @@
 
 #include <cglm/cglm.h>
 
-namespace cglm_utils
-{
-
-inline void vec3_normalize_safe(vec3 out_vector)
+static void cglm_ext_vec3_normalize_safe(vec3 out_vector)
 {
     if (glm_vec3_norm(out_vector) > 0.0f) 
     {
@@ -15,6 +12,4 @@ inline void vec3_normalize_safe(vec3 out_vector)
     {
         glm_vec3_zero(out_vector);
     }
-}
-
 }
