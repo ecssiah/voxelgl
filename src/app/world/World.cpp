@@ -1,22 +1,31 @@
 #include "app/world/world.h"
 
-#include <cstddef>
-#include <cstdio>
-#include <cfloat>
+#include <stddef.h>
+#include <stdio.h>
+#include <float.h>
 #include <stdlib.h>
 #include <time.h>
 
 #include <GLFW/glfw3.h>
 
-#include "app/camera.h"
 #include "core/utils.h"
 #include "platform/input.h"
+#include "app/camera.h"
 #include "app/world/grid.h"
 #include "app/action/action.h"
 
 World* world_create()
 {
+    i32 world_volume_in_sectors = get_world_volume_in_sectors();
+    i32 sector_volume_in_cells = get_sector_volume_in_cells();
+
     World* world = (World*)malloc(sizeof (World));
+    world->sector_array = (Sector*)malloc(sizeof (Sector) * world_volume_in_sectors);
+
+    for (SectorIndex sector_index = 0; sector_index < world_volume_in_sectors; sector_index++)
+    {
+        world->sector_array[sector_index].cell_array = (Cell*)malloc(sizeof (Cell) * sector_volume_in_cells);
+    }
 
     return world;
 }
@@ -54,7 +63,7 @@ bool world_init(World* world)
     return true;
 }
 
-void world_update(World* world, Input* input, Camera* camera, f32 dt)
+void world_update(World* world, Input* input, f32 dt)
 {
     while (!action_queue_is_empty(&input->action_queue))
     {
@@ -76,7 +85,7 @@ void world_update(World* world, Input* input, Camera* camera, f32 dt)
                     grid_coordinate
                 );
 
-                world_set_block_kind(world, grid_coordinate, camera->block_kind_selected);
+                world_set_block_kind(world, grid_coordinate, action.place.block_kind);
             }
 
             break;
@@ -104,6 +113,19 @@ void world_update(World* world, Input* input, Camera* camera, f32 dt)
             break;
         }
     }
+}
+
+void world_destroy(World* world)
+{
+    i32 world_volume_in_sectors = get_world_volume_in_sectors();
+
+    for (SectorIndex sector_index = 0; sector_index < world_volume_in_sectors; sector_index++)
+    {
+        free(world->sector_array[sector_index].cell_array);
+    }
+
+    free(world->sector_array);
+    free(world);
 }
 
 Cell* world_get_cell(World* world, GridCoordinate grid_coordinate)
@@ -140,7 +162,7 @@ void world_set_block_kind(World* world, GridCoordinate grid_coordinate, BlockKin
 
     cell->block_kind = block_kind;
 
-    w_update_face_exposure(world, cell, grid_coordinate);
+    world_update_face_exposure(world, cell, grid_coordinate);
 
     sector->version += 1;
 }
@@ -197,9 +219,9 @@ void world_set_block_kind_cube(World* world, GridCoordinate grid_coordinate_min,
     }
 }
 
-void w_update_face_exposure(World* world, Cell* cell, GridCoordinate grid_coordinate)
+void world_update_face_exposure(World* world, Cell* cell, GridCoordinate grid_coordinate)
 {
-    w_update_cell_face_mask(world, cell, grid_coordinate);
+    world_update_cell_face_mask(world, cell, grid_coordinate);
 
     for (int cell_face_index = 0; cell_face_index < CELL_FACE_COUNT; ++cell_face_index)
     {
@@ -210,7 +232,7 @@ void w_update_face_exposure(World* world, Cell* cell, GridCoordinate grid_coordi
 
         if (neighbor_cell)
         {
-            w_update_cell_face_mask(world, neighbor_cell, neighbor_grid_coordinate);
+            world_update_cell_face_mask(world, neighbor_cell, neighbor_grid_coordinate);
 
             const SectorIndex neighbor_sector_index = grid_coordinate_to_sector_index(neighbor_grid_coordinate);
             world->sector_array[neighbor_sector_index].version += 1;
@@ -218,7 +240,7 @@ void w_update_face_exposure(World* world, Cell* cell, GridCoordinate grid_coordi
     }
 }
 
-void w_update_cell_face_mask(World* world, Cell* cell, GridCoordinate grid_coordinate)
+void world_update_cell_face_mask(World* world, Cell* cell, GridCoordinate grid_coordinate)
 {
     cell->cell_face_mask = 0;
 

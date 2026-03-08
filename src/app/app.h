@@ -25,4 +25,4 @@ void app_destroy(App* app);
 void app_update(App* app, f64 dt);
 void app_render(App* app);
 
-void a_setup_demo_world(App* app);
+void app_setup_demo_world(App* app);

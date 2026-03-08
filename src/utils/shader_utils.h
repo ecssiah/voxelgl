@@ -1,41 +1,55 @@
 #pragma once
 
-#include <cstdio>
-#include <fstream>
-#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <glad/glad.h>
 
-static std::string shader_load(const char* filename)
+static char* shader_load(const char* filename)
 {
-    std::ifstream file(filename, std::ios::in);
+    FILE* file = fopen(filename, "rb");
 
-    if (!file.is_open())
+    if (!file)
     {
         fprintf(stderr, "[FILE ERROR] Could not open %s\n", filename);
-
-        return {};
+        return NULL;
     }
 
-    std::stringstream buffer;
-    buffer << file.rdbuf();
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    rewind(file);
 
-    return buffer.str();
+    char* buffer = (char*)malloc(size + 1);
+
+    if (!buffer)
+    {
+        fprintf(stderr, "[MEMORY ERROR] Could not allocate shader buffer\n");
+        fclose(file);
+        return NULL;
+    }
+
+    fread(buffer, 1, size, file);
+    buffer[size] = '\0';
+
+    fclose(file);
+
+    return buffer;
 }
 
-static GLuint shader_compile(GLuint type_id, const char* src) 
+static GLuint shader_compile(GLuint type_id, const char* src)
 {
     GLuint shader_id = glCreateShader(type_id);
 
-    glShaderSource(shader_id, 1, &src, nullptr);
+    glShaderSource(shader_id, 1, &src, NULL);
     glCompileShader(shader_id);
 
     int success = 0;
     glGetShaderiv(shader_id, GL_COMPILE_STATUS, &success);
 
-    if (!success) 
+    if (!success)
     {
         char log[1024];
-        glGetShaderInfoLog(shader_id, sizeof(log), nullptr, log);
+        glGetShaderInfoLog(shader_id, sizeof(log), NULL, log);
 
         fprintf(stderr, "[SHADER COMPILE ERROR]\n%s\n", log);
     }

@@ -19,13 +19,6 @@ bool camera_init(Camera* camera)
     camera->aspect_ratio = 16.0f / 9.0f;
     camera->near_plane = 0.1f;
     camera->far_plane = 1000.0f;
-    
-    camera->block_kind_selected = BLOCK_KIND_WOLF;
-
-    camera->block_kind_selection_array[0] = BLOCK_KIND_WOLF;
-    camera->block_kind_selection_array[1] = BLOCK_KIND_EAGLE;
-    camera->block_kind_selection_array[2] = BLOCK_KIND_LION;
-    camera->block_kind_selection_array[3] = BLOCK_KIND_HORSE;
 
     glm_mat4_identity(camera->projection_matrix);
     glm_mat4_identity(camera->view_matrix);
@@ -38,6 +31,13 @@ bool camera_init(Camera* camera)
 
     camera->speed = 8.0f;
     camera->sensitivity = 0.4f;
+
+    camera->block_kind_selected = BLOCK_KIND_WOLF;
+
+    camera->block_kind_selection_array[0] = BLOCK_KIND_WOLF;
+    camera->block_kind_selection_array[1] = BLOCK_KIND_EAGLE;
+    camera->block_kind_selection_array[2] = BLOCK_KIND_LION;
+    camera->block_kind_selection_array[3] = BLOCK_KIND_HORSE;
 
     camera_set_position(camera, 0.0f, 0.0f, 5.0f);
     camera_set_yaw(camera, -90.0f);
@@ -218,6 +218,7 @@ void camera_update(Camera* camera, Input* input, f64 dt)
 
         glm_vec3_copy(origin, action.place.origin);
         glm_vec3_copy(direction, action.place.direction);
+        action.place.block_kind = camera->block_kind_selected;
 
         action_queue_insert(&input->action_queue, action);
     }

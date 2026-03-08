@@ -51,8 +51,8 @@ static const char* BLOCK_KIND_NAME_ARRAY[BLOCK_KIND_COUNT] =
 
 struct Cell
 {
-    CellIndex cell_index;
     SectorIndex sector_index;
+    CellIndex cell_index;
     
     BlockKind block_kind;
     u8 cell_face_mask;
@@ -63,12 +63,12 @@ struct Sector
     u32 version;
     SectorIndex sector_index;
     
-    Cell cell_array[get_sector_volume_in_cells()];
+    Cell* cell_array;
 };
 
 struct World
 {
-    Sector sector_array[get_world_volume_in_sectors()];
+    Sector* sector_array;
 };
 
 struct HitResult
@@ -79,7 +79,8 @@ struct HitResult
 
 World* world_create();
 bool world_init(World* world);
-void world_update(World* world, Input* input, Camera* camera, f32 dt);
+void world_update(World* world, Input* input, f32 dt);
+void world_destroy(World* world);
 
 Cell* world_get_cell(World* world, GridCoordinate grid_coordinate);
 
@@ -91,8 +92,5 @@ HitResult world_line_trace(World* world, vec3 origin, vec3 direction, f32 distan
 
 void world_setup_demo_world(World* world);
 
-void w_update_face_exposure(World* world, Cell* cell, GridCoordinate grid_coordinate);
-void w_update_cell_face_mask(World* world, Cell* cell, GridCoordinate grid_coordinate);
-
-void w_sector_init(Sector* sector, SectorIndex sector_index);
-void w_cell_init(Cell* cell, SectorIndex sector_index, CellIndex cell_index);
+void world_update_face_exposure(World* world, Cell* cell, GridCoordinate grid_coordinate);
+void world_update_cell_face_mask(World* world, Cell* cell, GridCoordinate grid_coordinate);

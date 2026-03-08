@@ -44,4 +44,5 @@ void action_queue_init(ActionQueue* action_queue, u32 capacity);
 void action_queue_insert(ActionQueue* action_queue, Action action);
 bool action_queue_is_empty(ActionQueue* action_queue);
 Action action_queue_pop(ActionQueue* action_queue);
+void action_queue_destroy(ActionQueue* action_queue);
 

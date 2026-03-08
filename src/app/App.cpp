@@ -58,8 +58,9 @@ void app_update(App* app, f64 dt)
         window_request_close(app->window);
     }
     
-    world_update(app->world, app->input, app->camera, dt);
     camera_update(app->camera, app->input, dt);
+    world_update(app->world, app->input, dt);
+    
     renderer_update(app->renderer, app->world);
 }
 

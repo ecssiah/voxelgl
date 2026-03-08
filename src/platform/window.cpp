@@ -21,6 +21,8 @@ void window_init(Window* window)
     glfwInit();
 
     window_create_glfw_window(window);
+
+    window_print_info();
 }
 
 void window_create_glfw_window(Window* window) 
@@ -32,7 +34,7 @@ void window_create_glfw_window(Window* window)
 
     const char* window_title = "Voxel GL";
 
-    GLFWwindow* glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, nullptr, nullptr);
+    GLFWwindow* glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, NULL, NULL);
 
     if (glfw_window) 
     {
@@ -61,7 +63,7 @@ void window_destroy(Window* window)
     if (window->glfw_window) 
     {
         glfwDestroyWindow(window->glfw_window);
-        window->glfw_window = nullptr;
+        window->glfw_window = NULL;
     }
     
     glfwTerminate();

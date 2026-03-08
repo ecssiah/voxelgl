@@ -47,7 +47,7 @@ bool renderer_init(Renderer* renderer)
     if (!linked) 
     {
         char log[1024];
-        glGetProgramInfoLog(renderer->program_id, sizeof(log), nullptr, log);
+        glGetProgramInfoLog(renderer->program_id, sizeof(log), NULL, log);
 
         fprintf(stderr, "[PROGRAM LINK ERROR]\n%s\n", log);
     }
@@ -63,7 +63,7 @@ bool renderer_init(Renderer* renderer)
         glUniform1i(renderer->texture_sampler_location, 0);
     }
 
-    r_load_texture_array(renderer, "assets/textures");
+    renderer_load_texture_array(renderer, "assets/textures");
 
     glDeleteShader(vert_shader_id);
     glDeleteShader(frag_shader_id);
@@ -84,7 +84,7 @@ bool renderer_init(Renderer* renderer)
     return true;
 }
 
-void r_load_texture_array(Renderer* renderer, const char* directory)
+void renderer_load_texture_array(Renderer* renderer, const char* directory)
 {
     glGenTextures(1, &renderer->texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, renderer->texture_array_id);
@@ -99,7 +99,7 @@ void r_load_texture_array(Renderer* renderer, const char* directory)
         0,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
-        nullptr
+        NULL
     );
 
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -107,9 +107,9 @@ void r_load_texture_array(Renderer* renderer, const char* directory)
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    for (int block_kind = 0; block_kind < BLOCK_KIND_COUNT; ++block_kind)
+    for (int block_kind_index = 0; block_kind_index < BLOCK_KIND_COUNT; ++block_kind_index)
     {
-        const char* filename = BLOCK_KIND_TEXTURE_FILENAME[block_kind];
+        const char* filename = BLOCK_KIND_TEXTURE_FILENAME[block_kind_index];
 
         if (!filename) 
         {
@@ -145,7 +145,7 @@ void r_load_texture_array(Renderer* renderer, const char* directory)
             0,
             0, 
             0,
-            block_kind,
+            block_kind_index,
             width,
             height,
             1,
@@ -167,12 +167,12 @@ void renderer_update(Renderer* renderer, World* world)
         SectorMesh* sector_mesh = &renderer->sector_mesh_cache[sector_index];
         GpuMesh* gpu_mesh = &renderer->gpu_mesh_cache[sector_index];
 
-        r_build_sector_mesh(renderer, sector, sector_mesh);
-        r_upload_mesh(renderer, sector_mesh, gpu_mesh);
+        renderer_build_sector_mesh(renderer, sector, sector_mesh);
+        renderer_upload_gpu_mesh(renderer, sector_mesh, gpu_mesh);
     }
 }
 
-void r_build_sector_mesh(Renderer* renderer, Sector* sector, SectorMesh* out_sector_mesh)
+void renderer_build_sector_mesh(Renderer* renderer, Sector* sector, SectorMesh* out_sector_mesh)
 {
     if (sector->version <= out_sector_mesh->version) 
     {
@@ -219,7 +219,7 @@ void r_build_sector_mesh(Renderer* renderer, Sector* sector, SectorMesh* out_sec
         {
             if (cell->cell_face_mask & CELL_FACE_BIT(cell_face))
             {
-                r_emit_face(
+                renderer_emit_face(
                     renderer,
                     out_sector_mesh, 
                     cell_sector_position, 
@@ -233,7 +233,7 @@ void r_build_sector_mesh(Renderer* renderer, Sector* sector, SectorMesh* out_sec
     out_sector_mesh->version = sector->version;
 }
 
-void r_emit_face(Renderer* renderer, SectorMesh* sector_mesh, vec3 sector_position, CellFace cell_face, BlockKind block_kind)
+void renderer_emit_face(Renderer* renderer, SectorMesh* sector_mesh, vec3 sector_position, CellFace cell_face, BlockKind block_kind)
 {
     uint32_t base_index = sector_mesh->vertex_vec.size();
 
@@ -265,7 +265,7 @@ void r_emit_face(Renderer* renderer, SectorMesh* sector_mesh, vec3 sector_positi
     sector_mesh->index_vec.push_back(base_index + 0);
 }
 
-void r_upload_mesh(Renderer* renderer, SectorMesh* sector_mesh, GpuMesh* out_gpu_mesh)
+void renderer_upload_gpu_mesh(Renderer* renderer, SectorMesh* sector_mesh, GpuMesh* out_gpu_mesh)
 {
     if (sector_mesh->version <= out_gpu_mesh->version)
     {
@@ -367,12 +367,12 @@ void renderer_render(Renderer* renderer, mat4 view_matrix, mat4 projection_matri
 
         if (gpu_mesh->vao_id != 0)
         {
-            r_draw_mesh(renderer, gpu_mesh);
+            renderer_draw_mesh(renderer, gpu_mesh);
         }
     }
 }
 
-void r_draw_mesh(Renderer* renderer, GpuMesh* gpu_mesh)
+void renderer_draw_mesh(Renderer* renderer, GpuMesh* gpu_mesh)
 {
     mat4 model_view_projection_matrix;
     glm_mat4_mul(renderer->view_projection_matrix, gpu_mesh->model_matrix, model_view_projection_matrix);

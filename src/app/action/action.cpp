@@ -22,3 +22,8 @@ Action action_queue_pop(ActionQueue* action_queue)
 
     return action_queue->action_array[action_queue->action_count];
 }
+
+void action_queue_destroy(ActionQueue* action_queue)
+{
+    free(action_queue->action_array);
+}
