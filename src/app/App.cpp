@@ -3,10 +3,12 @@
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
 
+#include "app/world/world.h"
 #include "platform/input.h"
 #include "app/camera.h"
 #include "platform/window.h"
-#include "render/renderer.h"
+#include "interface/interface.h"
+#include "renderer/renderer.h"
 
 App* app_create()
 {
@@ -14,9 +16,10 @@ App* app_create()
 
     app->window = window_create();
     app->input = input_create();
+    app->interface = interface_create();
+    app->renderer = renderer_create();
     app->camera = camera_create();
     app->world = world_create();
-    app->renderer = renderer_create();
 
     return app;
 }
@@ -25,9 +28,10 @@ bool app_init(App* app)
 {
     window_init(app->window);
     input_init(app->input);
+    interface_init(app->interface);
+    renderer_init(app->renderer);
     camera_init(app->camera);
     world_init(app->world);
-    renderer_init(app->renderer);
 
     glfwSetWindowUserPointer(app->window->glfw_window, app->input);
 
@@ -57,23 +61,22 @@ void app_update(App* app, f64 dt)
     {
         window_request_close(app->window);
     }
-    
+
     camera_update(app->camera, app->input, dt);
     world_update(app->world, app->input, dt);
-    
-    renderer_update(app->renderer, app->world);
+
+    renderer_update(app->renderer, app->interface, app->world);
 }
 
 void app_render(App* app)
 {
-    mat4 view_matrix, projection_matrix;
-    camera_get_view_matrix(app->camera, view_matrix);
-    camera_get_projection_matrix(app->camera, projection_matrix);
-
-    renderer_render(app->renderer, view_matrix, projection_matrix);
+    renderer_render(app->renderer, app->camera);
 }
 
 void app_destroy(App* app)
 {
+    world_destroy(app->world);
+    renderer_destroy(app->renderer);
+
     free(app);
 }

@@ -17,7 +17,6 @@ struct Action
     {
         struct
         {
-            BlockKind block_kind;
             vec3 origin;
             vec3 direction;
         }

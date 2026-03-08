@@ -52,8 +52,9 @@ target_sources(
     vendor/glad/src/glad.c
     src/platform/window.cpp
     src/platform/input.cpp
-    src/render/renderer.cpp
-    src/render/stb_image_loader.cpp
+    src/interface/interface.cpp
+    src/renderer/renderer.cpp
+    src/renderer/stb_image_loader.cpp
     src/app/app.cpp
     src/app/camera.cpp
     src/app/action/action.cpp

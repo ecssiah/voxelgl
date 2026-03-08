@@ -10,7 +10,5 @@ out vec4 FragColor;
 
 void main()
 {
-    vec4 texture_color = texture(u_texture_sampler, vec3(v_uv, float(v_texture_index)));
-
-    FragColor = texture_color;
+    FragColor = texture(u_texture_sampler, vec3(v_uv, float(v_texture_index)));
 }

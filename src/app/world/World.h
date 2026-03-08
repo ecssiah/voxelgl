@@ -32,6 +32,7 @@ enum BlockKind
 {
     BLOCK_KIND_NONE,
     BLOCK_KIND_STONE,
+    BLOCK_KIND_ENGRAVED,
     BLOCK_KIND_EAGLE,
     BLOCK_KIND_LION,
     BLOCK_KIND_WOLF,
@@ -43,6 +44,7 @@ static const char* BLOCK_KIND_NAME_ARRAY[BLOCK_KIND_COUNT] =
 {
     "None",
     "Stone",
+    "Engraved",
     "Eagle",
     "Lion",
     "Wolf",
@@ -68,6 +70,10 @@ struct Sector
 
 struct World
 {
+    u32 voxel_version;
+    u32 character_version;
+
+    BlockKind selected_block_kind;
     Sector* sector_array;
 };
 

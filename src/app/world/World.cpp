@@ -34,6 +34,11 @@ bool world_init(World* world)
 {
     srand((unsigned int)time(NULL));
 
+    world->voxel_version = 1;
+    world->character_version = 1;
+
+    world->selected_block_kind = BLOCK_KIND_STONE;
+
     for (SectorIndex sector_index = 0; sector_index < get_world_volume_in_sectors(); sector_index++)
     {
         SectorCoordinate sector_coordinate;
@@ -65,6 +70,33 @@ bool world_init(World* world)
 
 void world_update(World* world, Input* input, f32 dt)
 {
+    // TODO: This is for testing only
+    if (input_is_key_released(input, GLFW_KEY_1))
+    {
+        int block_kind_index = (world->selected_block_kind - 1) % BLOCK_KIND_COUNT;
+        
+        if (block_kind_index == 0)
+        {
+            block_kind_index = BLOCK_KIND_COUNT - 1;
+        }
+
+        world->selected_block_kind = (BlockKind)(block_kind_index);
+        world->character_version += 1;
+    }
+
+    if (input_is_key_released(input, GLFW_KEY_2))
+    {
+        int block_kind_index = (world->selected_block_kind + 1) % BLOCK_KIND_COUNT;
+        
+        if (block_kind_index == 0)
+        {
+            block_kind_index = 1;
+        }
+
+        world->selected_block_kind = (BlockKind)(block_kind_index);
+        world->character_version += 1;
+    }
+
     while (!action_queue_is_empty(&input->action_queue))
     {
         Action action = action_queue_pop(&input->action_queue);
@@ -85,7 +117,7 @@ void world_update(World* world, Input* input, f32 dt)
                     grid_coordinate
                 );
 
-                world_set_block_kind(world, grid_coordinate, action.place.block_kind);
+                world_set_block_kind(world, grid_coordinate, world->selected_block_kind);
             }
 
             break;
@@ -165,6 +197,7 @@ void world_set_block_kind(World* world, GridCoordinate grid_coordinate, BlockKin
     world_update_face_exposure(world, cell, grid_coordinate);
 
     sector->version += 1;
+    world->voxel_version += 1;
 }
 
 void world_set_block_kind_wireframe(World* world, GridCoordinate grid_coordinate_min, GridCoordinate grid_coordinate_max, BlockKind block_kind)
@@ -236,6 +269,7 @@ void world_update_face_exposure(World* world, Cell* cell, GridCoordinate grid_co
 
             const SectorIndex neighbor_sector_index = grid_coordinate_to_sector_index(neighbor_grid_coordinate);
             world->sector_array[neighbor_sector_index].version += 1;
+            world->voxel_version += 1;
         }
     }
 }

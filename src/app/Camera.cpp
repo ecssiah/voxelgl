@@ -218,7 +218,6 @@ void camera_update(Camera* camera, Input* input, f64 dt)
 
         glm_vec3_copy(origin, action.place.origin);
         glm_vec3_copy(direction, action.place.direction);
-        action.place.block_kind = camera->block_kind_selected;
 
         action_queue_insert(&input->action_queue, action);
     }
@@ -240,19 +239,6 @@ void camera_update(Camera* camera, Input* input, f64 dt)
         glm_vec3_copy(direction, action.remove.direction);
 
         action_queue_insert(&input->action_queue, action);
-    }
-
-    // TODO: This is for testing only, remove from Camera
-    if (input_is_key_released(input, GLFW_KEY_TAB))
-    {
-        int block_kind_index = (camera->block_kind_selected + 1) % BLOCK_KIND_COUNT;
-        
-        if (block_kind_index == 0)
-        {
-            block_kind_index = 1;
-        }
-
-        camera->block_kind_selected = (BlockKind)(block_kind_index);
     }
 
     cglm_ext_vec3_normalize_safe(input_value);

@@ -4,6 +4,7 @@
 
 struct Input;
 struct Window;
+struct Interface;
 struct Renderer;
 struct Camera;
 struct World;
@@ -12,6 +13,7 @@ struct App
 {
     Input* input;
     Window* window;
+    Interface* interface;
     Renderer* renderer;
     Camera* camera;
     World* world;
